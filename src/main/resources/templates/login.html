@@ -1,0 +1,40 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>W - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="w-svw h-svh flex justify-center items-center text-slate-900">
+<div class="hidden md:flex h-full w-[60%] bg-sky-400 flex-col justify-center items-center">
+    <a href="/" class="text-[35svh] font-bold text-slate-50 opacity-30 hover:opacity-100">W</a>
+</div>
+
+<div class="h-full w-full md:w-[40%] p-5 flex flex-col justify-center items-center gap-10">
+    <header class="w-[90%] flex flex-col justify-center items-start gap-2">
+        <h1 class="text-[1.75em] font-medium">Thoughts around the world</h1>
+        <h2 class="font-medium text-slate-500">Sign in to your W account</h2>
+    </header>
+
+    <form class="w-[90%] flex flex-col justify-center items-center gap-5">
+        <label for="email" class="w-full flex flex-col items-center gap-1.5">
+            <span class="self-start font-medium text-lg">Email</span>
+            <input type="email" name="email" id="email" required autocomplete="email"
+                   class="w-full px-2 py-1 rounded-md bg-slate-200 text-lg">
+        </label>
+
+        <label for="password" class="w-full flex flex-col items-center gap-1.5">
+            <span class="w-full flex justify-between items-center">
+                <span class="self-start font-medium text-lg">Password</span>
+                <a href="#" class="no-underline hover:underline">Forgot password?</a>
+            </span>
+            <input type="password" name="password" id="password" required autocomplete="current-password"
+                   class="w-full px-2 py-1 rounded-md bg-slate-200 text-lg">
+        </label>
+
+        <button type="submit" class="w-full mt-8 p-2 rounded-full font-medium bg-sky-400 hover:bg-orange-400">Login
+        </button>
+    </form>
+</div>
+</body>
+</html>

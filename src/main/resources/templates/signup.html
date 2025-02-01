@@ -1,0 +1,81 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>W - Sign Up</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="w-svw h-svh flex justify-center items-center bg-slate-50 text-slate-900">
+<div class="hidden md:flex h-full w-[60%] p-5 bg-sky-400 flex-col justify-center items-center gap-16">
+    <h2 class="text-[2.75em] md:w-[80%] lg:w-[45%] font-medium text-slate-50">Join the latest discussions
+        <wbr>
+        around the world right now
+    </h2>
+    <ul class="flex flex-col justify-center items-start gap-10">
+        <li>
+            <div class="flex justify-start items-center gap-5">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="bi bi-bookmarks-fill size-[2em] fill-slate-50" viewBox="0 0 16 16">
+                    <path d="M2 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v11.5a.5.5 0 0 1-.777.416L7 13.101l-4.223 2.815A.5.5 0 0 1 2 15.5z"/>
+                    <path d="M4.268 1A2 2 0 0 1 6 0h6a2 2 0 0 1 2 2v11.5a.5.5 0 0 1-.777.416L13 13.768V2a1 1 0 0 0-1-1z"/>
+                </svg>
+                <span class="text-xl font-medium text-slate-50">Follow your interests</span>
+            </div>
+        </li>
+        <li>
+            <div class="flex justify-start items-center gap-5">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="bi bi-people-fill size-[2em] fill-slate-50" viewBox="0 0 16 16">
+                    <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
+                </svg>
+                <span class="text-xl font-medium text-slate-50">Hear what people are talking about</span>
+            </div>
+        </li>
+        <li>
+            <div class="flex justify-start items-center gap-5">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="bi bi-chat-left-fill size-[2em] fill-slate-50" viewBox="0 0 16 16">
+                    <path d="M2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                </svg>
+                <span class="text-xl font-medium text-slate-50">Join the conversation</span>
+            </div>
+        </li>
+    </ul>
+</div>
+
+<div class="h-full w-full md:w-[40%] p-5 flex flex-col justify-center items-center gap-10">
+    <header class="w-[90%] flex flex-col justify-center items-start gap-2">
+        <h1 class="text-[1.5em] font-medium text-center">Join the world, now</h1>
+    </header>
+
+    <form class="w-[90%] flex flex-col justify-center items-center gap-5">
+        <label for="email" class="w-full flex flex-col items-center gap-1.5">
+            <span class="self-start font-medium text-lg">Username</span>
+            <input type="text" name="username" id="username" required autocomplete="username"
+                   class="w-full px-3 py-1 rounded-md bg-slate-200 text-lg" placeholder="username">
+        </label>
+
+        <label for="email" class="w-full flex flex-col items-center gap-1.5">
+            <span class="self-start font-medium text-lg">Email</span>
+            <input type="email" name="email" id="email" required autocomplete="email"
+                   class="w-full px-3 py-1 rounded-md bg-slate-200 text-lg" placeholder="username@example.com">
+        </label>
+
+        <label for="password" class="w-full flex flex-col items-center gap-1.5">
+            <span class="self-start font-medium text-lg">Password</span>
+            <input type="password" name="password" id="password" required autocomplete="new-password"
+                   class="w-full px-3 py-1 rounded-md bg-slate-200 text-lg" placeholder="*********">
+        </label>
+
+        <label for="password_repeat" class="w-full flex flex-col items-center gap-1.5">
+            <span class="self-start font-medium text-lg">Repeat Password</span>
+            <input type="password" name="password_repeat" id="password_repeat" required autocomplete="off"
+                   class="w-full px-3 py-1 rounded-md bg-slate-200 text-lg" placeholder="*********">
+        </label>
+
+        <button type="submit" class="w-full mt-8 p-2 rounded-full font-medium bg-sky-400 hover:bg-orange-400">Login
+        </button>
+    </form>
+</div>
+</body>
+</html>
