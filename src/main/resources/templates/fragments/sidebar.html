@@ -1,0 +1,202 @@
+<aside th:fragment="sidebar" th:remove="tag" xmlns:th="http://www.thymeleaf.org">
+    <div class="w-full hidden md:flex justify-start">
+        <a th:href="@{/}"
+           class="h-12 aspect-square flex justify-center items-center rounded-lg shadow-sm bg-darker text-white text-2xl font-light">W</a>
+    </div>
+
+    <form id="search-form" th:action="@{/api/search}"
+          class="group w-full h-max m-0 hidden md:flex rounded-full shadow-sm border border-dark">
+        <input type="text" id="search-input" name="search-input" placeholder="Search" aria-label="Search W" required
+               class="search-input grow max-w-full pl-6 pr-3 py-3 rounded-l-full rounded-r-full lg:rounded-r-none bg-lighter text-dark-faded">
+        <button type="submit"
+                class="h-full pr-6 py-3 hidden lg:flex justify-center items-center self-stretch rounded-r-full bg-lighter">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="bi bi-search fill-slate-600 size-[1.25em]"
+                 viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+            </svg>
+        </button>
+    </form>
+
+    <div class="w-full flex flex-row md:flex-col gap-3 md:gap-10 grow-0 md:grow">
+        <nav class="w-auto md:w-full flex flex-row md:flex-col justify-start items-start gap-3">
+            <a th:href="@{/}"
+               class="group w-auto md:w-full h-max p-3 flex justify-start items-center rounded-lg gap-5 btn-light-highlighted">
+                <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-house fill-slate-800 size-[1.5em]"
+                     viewBox="0 0 16 16">
+                    <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/>
+                </svg>
+                <span class="hidden md:inline font-medium text-lg">Home</span>
+            </a>
+
+            <a th:href="@{/explore}"
+               class="group w-auto md:w-full h-max p-3 flex justify-start items-center rounded-lg gap-5 btn-light-faded">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="bi bi-globe size-[1.5em]" viewBox="0 0 16 16">
+                    <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m7.5-6.923c-.67.204-1.335.82-1.887 1.855A8 8 0 0 0 5.145 4H7.5zM4.09 4a9.3 9.3 0 0 1 .64-1.539 7 7 0 0 1 .597-.933A7.03 7.03 0 0 0 2.255 4zm-.582 3.5c.03-.877.138-1.718.312-2.5H1.674a7 7 0 0 0-.656 2.5zM4.847 5a12.5 12.5 0 0 0-.338 2.5H7.5V5zM8.5 5v2.5h2.99a12.5 12.5 0 0 0-.337-2.5zM4.51 8.5a12.5 12.5 0 0 0 .337 2.5H7.5V8.5zm3.99 0V11h2.653c.187-.765.306-1.608.338-2.5zM5.145 12q.208.58.468 1.068c.552 1.035 1.218 1.65 1.887 1.855V12zm.182 2.472a7 7 0 0 1-.597-.933A9.3 9.3 0 0 1 4.09 12H2.255a7 7 0 0 0 3.072 2.472M3.82 11a13.7 13.7 0 0 1-.312-2.5h-2.49c.062.89.291 1.733.656 2.5zm6.853 3.472A7 7 0 0 0 13.745 12H11.91a9.3 9.3 0 0 1-.64 1.539 7 7 0 0 1-.597.933M8.5 12v2.923c.67-.204 1.335-.82 1.887-1.855q.26-.487.468-1.068zm3.68-1h2.146c.365-.767.594-1.61.656-2.5h-2.49a13.7 13.7 0 0 1-.312 2.5m2.802-3.5a7 7 0 0 0-.656-2.5H12.18c.174.782.282 1.623.312 2.5zM11.27 2.461c.247.464.462.98.64 1.539h1.835a7 7 0 0 0-3.072-2.472c.218.284.418.598.597.933M10.855 4a8 8 0 0 0-.468-1.068C9.835 1.897 9.17 1.282 8.5 1.077V4z"/>
+                </svg>
+                <span class="hidden md:inline font-medium text-lg">Explore</span>
+            </a>
+
+            <a th:href="@{/notifications}"
+               class="group w-auto md:w-full h-max p-3 flex justify-start items-center rounded-lg gap-5 btn-light-faded">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="bi bi-bell size-[1.5em]" viewBox="0 0 16 16">
+                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
+                </svg>
+                <span class="hidden md:inline font-medium text-lg">Notifications</span>
+            </a>
+
+            <a th:href="@{/bookmarks}"
+               class="group w-auto md:w-full h-max p-3 flex justify-start items-center rounded-lg gap-5 btn-light-faded">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="bi bi-bookmark size-[1.5em]" viewBox="0 0 16 16">
+                    <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z"/>
+                </svg>
+                <span class="hidden md:inline font-medium text-lg">Bookmarks</span>
+            </a>
+        </nav>
+
+        <div class="w-auto md:w-full grow">
+            <button id="post-button" type="button"
+                    class="w-full h-max p-3 rounded-full text-center btn-accent">
+                <span class="font-medium text-base md:text-lg" title="Create a new post">Post</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="w-full pl-3 hidden md:flex justify-start items-center gap-3 justify-self-end">
+        <th:block
+                th:with="linkUrl = ${(#authentication.principal == 'anonymousUser') ? 'login' : 'users/' + #authentication.getPrincipal().getUser().getId()}">
+            <a class="h-12 aspect-square rounded-full hidden lg:flex justify-center items-center bg-darker">
+                <svg th:if="${#authentication.principal == 'anonymousUser' || #authentication.getPrincipal().getProfile().getAvatar() == null}"
+                     xmlns="http://www.w3.org/2000/svg"
+                     class="bi bi-person-fill m-1 fill-slate-50 size-[1.5em]"
+                     viewBox="0 0 16 16">
+                    <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                </svg>
+
+                <img th:id="user-avatar-image"
+                     th:if="${#authentication.principal != 'anonymousUser' && #authentication.getPrincipal().getProfile().getAvatar() != null}"
+                     class="size-full object-cover object-center rounded-full"
+                     th:src="@{/users/{id}/avatar(id = ${#authentication.getPrincipal().getUser().getId()})}"
+                     th:alt="${#authentication.getPrincipal().getUser().getDisplayName() + ' avatar image'}"/>
+            </a>
+        </th:block>
+
+        <th:block
+                th:with="linkUrl = ${(#authentication.principal == 'anonymousUser') ? 'login' : 'users/' + #authentication.getPrincipal().getUser().getId()}">
+            <a class="grow flex flex-col justify-between items-start" th:href="@{/{link}(link = ${linkUrl})}">
+                <span class="font-medium text-lg text-dark"
+                      th:text="${(#authentication.principal == 'anonymousUser') ? 'Guest Account' : #authentication.getPrincipal().getUser().getDisplayName() }">
+                    User Name
+                </span>
+                <span class="text-dark-faded"
+                      th:text="${(#authentication.principal == 'anonymousUser') ? '@guest' : '@' + #authentication.getPrincipal().getUser().getUsername()}">
+                    @username
+                </span>
+            </a>
+        </th:block>
+
+        <button id="settings-button" type="button"
+                class="group h-12 aspect-square p-1 flex justify-center items-center rounded-lg btn-light-faded">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="bi bi-three-dots size-[1.5em]" viewBox="0 0 16 16">
+                <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
+            </svg>
+        </button>
+        `
+
+        <div id="settings-popover" class="hidden absolute z-10 w-max p-3 rounded-lg shadow-lg bg-lighter">
+            <div th:if="${#authentication.principal == 'anonymousUser'}" class="flex flex-col gap-3">
+                <a th:href="@{/login}"
+                   class="h-12 w-full p-1 flex justify-start items-center gap-3 rounded-lg font-medium text-dark">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-box-arrow-in-left aspect-square h-6"
+                         viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                              d="M10 3.5a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 1 1 0v2A1.5 1.5 0 0 1 9.5 14h-8A1.5 1.5 0 0 1 0 12.5v-9A1.5 1.5 0 0 1 1.5 2h8A1.5 1.5 0 0 1 11 3.5v2a.5.5 0 0 1-1 0z"/>
+                        <path fill-rule="evenodd"
+                              d="M4.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H14.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708z"/>
+                    </svg>
+                    <span>Login</span>
+                </a>
+                <a th:href="@{/signup}"
+                   class="h-12 w-full p-1 flex justify-start items-center gap-3 rounded-lg font-medium text-dark">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-person-plus-fill aspect-square h-6"
+                         viewBox="0 0 16 16">
+                        <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                        <path fill-rule="evenodd"
+                              d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5"/>
+                    </svg>
+                    <span>Sign Up</span>
+                </a>
+            </div>
+
+            <div th:if="${#authentication.principal != 'anonymousUser'}" class="flex flex-col gap-3">
+                <a th:href="@{/settings}"
+                   class="h-12 w-full p-1 flex justify-start items-center gap-3 rounded-lg font-medium text-dark">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-sliders aspect-square h-6" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                              d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1z"/>
+                    </svg>
+                    <span>Settings</span>
+                </a>
+                <form id="logout-form" th:action="@{/logout}" method="POST"
+                      class="h-12 w-full p-1 m-0 flex items-center">
+                    <button type="submit"
+                            class="flex justify-start items-center gap-3 rounded-lg font-medium text-dark">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-box-arrow-right aspect-square h-6"
+                             viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                  d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/>
+                            <path fill-rule="evenodd"
+                                  d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/>
+                        </svg>
+                        <span>Logout</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <script th:inline="javascript">
+            const settingsBtn = document.getElementById("settings-button");
+            const settingsPopover = document.getElementById("settings-popover");
+
+            function attachPopover() {
+                const boundingClientRect = settingsBtn.getBoundingClientRect();
+                settingsPopover.style.bottom = `${boundingClientRect.bottom - boundingClientRect.top + 30}px`;
+                settingsPopover.style.left = `${boundingClientRect.left - 72.5}px`
+            }
+
+            document.addEventListener("DOMContentLoaded", () => {
+                attachPopover();
+            });
+            window.addEventListener("resize", () => {
+                attachPopover();
+            })
+
+            function openPopover() {
+                settingsPopover.classList.remove("hidden");
+                settingsBtn.classList.remove("btn-light-faded");
+                settingsBtn.classList.add("btn-light-faded-highlighted");
+            }
+
+            function closePopover() {
+                settingsPopover.classList.add("hidden");
+                settingsBtn.classList.add("btn-light-faded");
+                settingsBtn.classList.remove("btn-light-faded-highlighted");
+            }
+
+            let isToggled = false;
+            settingsBtn.addEventListener("click", () => {
+                if (isToggled) {
+                    closePopover();
+                    isToggled = false;
+                } else {
+                    openPopover();
+                    isToggled = true;
+                }
+            })
+        </script>
+    </div>
+</aside>
