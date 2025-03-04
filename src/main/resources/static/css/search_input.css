@@ -1,0 +1,8 @@
+.search-input {
+    outline: none;
+    border: none;
+}
+
+.search-input:focus-visible {
+    outline: none;
+}
