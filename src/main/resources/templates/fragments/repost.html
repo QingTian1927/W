@@ -1,0 +1,40 @@
+<a th:fragment="repost (repost)" xmlns:th="http://www.thymeleaf.org"
+   th:with="originalUser = ${repost.getUser()}"
+   th:href="@{/post/{id}(id = ${repost.getId()})}"
+   class="grow w-full p-3 flex justify-start items-center rounded-lg border-2 border-repost">
+    <div class="size-full flex justify-start items-start gap-3">
+        <div th:with="originalProfile = ${@profileServiceImpl.findById(originalUser.getId())}"
+             class="grow min-h-38 m-0 flex flex-col justify-start items-start gap-3">
+            <div class="w-full flex justify-start items-center gap-3">
+                <div class="h-10 aspect-square rounded-full flex justify-center items-center bg-darker">
+                    <svg th:if="${originalProfile.isPresent() && originalProfile.get().getAvatar() == null}"
+                         xmlns="http://www.w3.org/2000/svg"
+                         class="bi bi-person-fill m-1 fill-lighter size-[1.25em]"
+                         viewBox="0 0 16 16">
+                        <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                    </svg>
+
+                    <img th:if="${originalProfile.isPresent() && originalProfile.get().getAvatar() != null}"
+                         class="size-full object-cover object-center rounded-full"
+                         th:src="@{/users/{id}/avatar(id = ${originalUser.getId()})}"
+                         th:alt="${originalUser.getDisplayName() + ' avatar image'}"/>
+                </div>
+
+                <div class="grow">
+                    <p class="mb-0.5 font-medium text-dark" th:text="${originalUser.getDisplayName()}">
+                        Display
+                        Name</p>
+                    <p class="text-sm text-dark-faded">
+                        <time th:datetime="${repost.getCreatedDate()}" th:text="${repost.getCreatedDate()}">
+                            2025-01-01
+                        </time>
+                    </p>
+                </div>
+            </div>
+
+            <p class="grow w-full text-justify text-dark" th:text="${repost.getContent()}">
+                Repost Content
+            </p>
+        </div>
+    </div>
+</a>
