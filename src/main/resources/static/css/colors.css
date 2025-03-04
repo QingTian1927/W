@@ -1,0 +1,282 @@
+:root {
+    --lighterwhite: #FFFFFF;
+    --white: #E8F1FD;
+    --fadedwhite: #ECF4FD;
+    --darkerfadedwhite: #DAE9FB;
+    --darkgreen: #2a5045;
+    --darkergreen: #1C352E;
+    --black: #0E1B17;
+    --fadeddarkgreen: #54A08B;
+    --lightgreen: #84D9BA;
+    --browngreen: #718C49;
+    --purple: #BF3B84;
+    --accent: #3C7363;
+}
+
+.text-darker {
+    color: var(--black);
+}
+
+.text-dark {
+    color: var(--darkgreen);
+}
+
+.text-dark-faded {
+    color: var(--fadeddarkgreen);
+}
+
+.text-white {
+    color: var(--white);
+}
+
+.text-warning {
+    color: var(--purple);
+}
+
+.text-success {
+    color: var(--fadeddarkgreen);
+}
+
+.bg-dark {
+    background-color: var(--darkgreen);
+}
+
+.bg-darker {
+    background-color: var(--darkergreen);
+}
+
+.bg-darker-transparent {
+    background-color: rgba(28, 53, 46, 0.7);
+}
+
+.bg-lighter-darker-transparent {
+    background-color: rgba(71, 106, 96, 0.8);
+}
+
+.bg-black-transparent {
+    background-color: rgba(14, 27, 23, 0.8);
+}
+
+.bg-lighter {
+    background-color: var(--lighterwhite);
+}
+
+.bg-light {
+    background-color: var(--white);
+}
+
+.bg-light-faded {
+    background-color: var(--fadedwhite);
+}
+
+.bg-darker-light-faded {
+    background-color: var(--darkerfadedwhite);
+}
+
+.bg-accent {
+    background-color: var(--accent);
+}
+
+.bg-purple-transparent {
+    background-color: rgba(191, 59, 132, 0.2);
+}
+
+.bg-lightgreen-transparent {
+    background-color: rgba(132, 217, 186, 0.2);
+}
+
+.bg-browngreen-transparent {
+    background-color: rgba(113, 140, 73, 0.2);
+}
+
+.fill-dark {
+    filter: invert(26%) sepia(9%) saturate(2109%) hue-rotate(112deg) brightness(88%) contrast(84%);
+}
+
+.fill-dark path {
+    color: var(--darkgreen);
+}
+
+.fill-darker {
+    filter: invert(7%) sepia(11%) saturate(1722%) hue-rotate(110deg) brightness(97%) contrast(95%);
+}
+
+.fill-darker path {
+    color: var(--black);
+}
+
+.fill-lighter {
+    filter: invert(99%) sepia(95%) saturate(2%) hue-rotate(117deg) brightness(107%) contrast(100%);
+}
+
+.fill-lighter path {
+    color: var(--lighterwhite);
+}
+
+.fill-purple {
+    filter: invert(29%) sepia(79%) saturate(1361%) hue-rotate(294deg) brightness(90%) contrast(86%);
+}
+
+.fill-purple path {
+    color: var(--purple);
+}
+
+.fill-lightgreen {
+    filter: invert(86%) sepia(23%) saturate(571%) hue-rotate(100deg) brightness(90%) contrast(89%);
+}
+
+.fill-lightgreen path {
+    color: var(--lightgreen);
+}
+
+.btn-post-like {
+    color: var(--darkgreen);
+    background-color: var(--lighterwhite);
+}
+
+.btn-post-like:hover {
+    color: rgba(191, 59, 132, 1);
+    background-color: rgba(191, 59, 132, 0.1);
+}
+
+.btn-post-like:hover svg {
+    filter: invert(29%) sepia(79%) saturate(1361%) hue-rotate(294deg) brightness(90%) contrast(86%);
+}
+
+.btn-post-share {
+    color: var(--darkgreen);
+    background-color: var(--lighterwhite);
+}
+
+.btn-post-share:hover {
+    color: rgba(132, 217, 186, 1);
+    background-color: rgba(132, 217, 186, 0.1);
+}
+
+.btn-post-share:hover svg {
+    filter: invert(86%) sepia(23%) saturate(571%) hue-rotate(100deg) brightness(90%) contrast(89%);
+}
+
+.btn-post-comment {
+    color: var(--darkgreen);
+    background-color: var(--lighterwhite);
+}
+
+.btn-post-comment:hover {
+    color: var(--browngreen);
+    background-color: rgba(113, 140, 73, 0.1);
+}
+
+.btn-post-comment:hover svg {
+    filter: invert(44%) sepia(91%) saturate(244%) hue-rotate(42deg) brightness(97%) contrast(79%);
+}
+
+.btn-accent {
+    color: var(--darkgreen);
+    background-color: var(--lightgreen);
+}
+
+.btn-accent:hover {
+    color: var(--white);
+    background-color: var(--purple);
+}
+
+.btn-light-highlighted {
+    color: var(--darkgreen);
+    background-color: var(--lighterwhite);
+}
+
+.btn-light {
+    color: var(--darkerfadedwhite);
+    background-color: var(--lighterwhite);
+}
+
+.btn-light svg {
+    filter: invert(26%) sepia(9%) saturate(2109%) hue-rotate(112deg) brightness(88%) contrast(84%);
+}
+
+.btn-light:hover {
+    color: var(--darkgreen);
+    background-color: var(--fadedwhite);
+}
+
+.btn-light:hover svg {
+    filter: invert(15%) sepia(23%) saturate(898%) hue-rotate(112deg) brightness(90%) contrast(88%);
+}
+
+.btn-light-faded {
+    color: var(--darkgreen);
+    background-color: var(--fadedwhite);
+}
+
+.btn-light-faded svg {
+    filter: invert(26%) sepia(9%) saturate(2109%) hue-rotate(112deg) brightness(88%) contrast(84%);
+}
+
+.btn-light-faded:hover {
+    color: var(--darkergreen);
+    background-color: var(--lighterwhite);
+}
+
+.btn-light-faded:hover svg {
+    filter: invert(15%) sepia(23%) saturate(898%) hue-rotate(112deg) brightness(90%) contrast(88%);
+}
+
+.btn-light-faded-highlighted {
+    color: var(--darkergreen);
+    background-color: var(--lighterwhite);
+}
+
+.btn-light-faded-highlighted svg {
+    filter: invert(15%) sepia(23%) saturate(898%) hue-rotate(112deg) brightness(90%) contrast(88%);
+}
+
+.btn-light-faded-highlighted:hover svg {
+    filter: invert(37%) sepia(27%) saturate(638%) hue-rotate(112deg) brightness(97%) contrast(86%);
+}
+
+.btn-send-comment {
+    color: var(--darkgreen);
+    background-color: var(--fadedwhite);
+}
+
+.btn-send-comment svg {
+    filter: invert(26%) sepia(9%) saturate(2109%) hue-rotate(112deg) brightness(88%) contrast(84%);
+}
+
+.btn-send-comment:hover svg {
+    filter: invert(91%) sepia(19%) saturate(768%) hue-rotate(91deg) brightness(90%) contrast(88%);
+}
+
+.btn-black-transparent {
+    color: var(--white);
+    background-color: rgba(14, 27, 23, 0);
+}
+
+.btn-black-transparent:hover {
+    background-color: rgba(28, 53, 46, 0.8);
+}
+
+.btn-black-transparent svg {
+    filter: invert(91%) sepia(90%) saturate(3252%) hue-rotate(178deg) brightness(110%) contrast(99%);
+}
+
+.border-lighter {
+    border-color: var(--lighterwhite);
+}
+
+.border-light {
+    border-color: #ddefe7;
+}
+
+.border-dark {
+    border-color: var(--darkgreen);
+}
+
+.border-repost {
+    border-color: #CAE3DB;
+}
+
+.border-repost:hover {
+    border-color: var(--lightgreen);
+}
