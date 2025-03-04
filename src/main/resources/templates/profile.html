@@ -1,0 +1,315 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>W - profile.html</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/search_input.css}">
+    <link rel="stylesheet" th:href="@{/css/colors.css}">
+</head>
+<body class="max-w-svw min-h-svh flex flex-col-reverse md:flex-row justify-center items-center bg-light-faded text-dark">
+<aside class="h-[10%] md:h-full w-full md:w-[30%] xl:w-[20%] p-3 flex flex-col justify-center gap-12">
+    <th:block th:insert="~{fragments/sidebar}"></th:block>
+</aside>
+<main class="h-[90%] md:h-full w-full md:w-[70%] xl:w-[80%] p-3 pb-0 md:pb-3 flex justify-center items-center">
+    <div class="relative size-full rounded-lg shadow-md md:shadow-lg bg-lighter text-dark">
+        <th:block th:insert="~{fragments/viewfeed_header}"></th:block>
+
+        <div th:if="${user != null && profile != null}" class="w-full">
+            <div id="user-banner-frame" class="group relative w-full h-[40%]">
+                <img th:if="${profile.getBanner() != null}" th:id="user-banner-image"
+                     class="size-full object-cover object-center rounded-none md:rounded-t-lg"
+                     th:src="@{/users/{id}/banner(id = ${user.getId()})}"
+                     th:alt="${user.getDisplayName() + ' banner image'}"/>
+
+                <div th:unless="${profile.getBanner() != null}" th:id="user-banner-image"
+                     class="size-full rounded-none md:rounded-t-lg bg-darker"></div>
+
+                <div class="absolute top-0 hidden group-hover:flex size-full justify-end items-start rounded-none md:rounded-t-lg bg-lighter-darker-transparent">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="bi bi-arrow-up-right-circle fill-lighter aspect-square h-[10%] m-3"
+                         viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                              d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.854 10.803a.5.5 0 1 1-.708-.707L9.243 6H6.475a.5.5 0 1 1 0-1h3.975a.5.5 0 0 1 .5.5v3.975a.5.5 0 1 1-1 0V6.707z"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div id="user-avatar-frame"
+                 class="group absolute top-[20.5em] md:top-[18.75em] left-6 aspect-square h-40 flex justify-center items-center rounded-full bg-light border-4 border-lighter shadow-lg">
+                <div class="relative size-full rounded-full flex justify-center items-center">
+                    <img th:id="user-avatar-image" th:if="${profile.getAvatar() != null}"
+                         class="size-full object-cover object-center rounded-full"
+                         th:src="@{/users/{id}/avatar(id = ${user.getId()})}"
+                         th:alt="${user.getDisplayName() + ' avatar image'}"/>
+
+                    <svg th:id="user-avatar-image" th:unless="${profile.getAvatar() != null}"
+                         xmlns="http://www.w3.org/2000/svg"
+                         class="bi bi-person-fill aspect-square w-1/2 fill-dark"
+                         viewBox="0 0 16 16">
+                        <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                    </svg>
+
+                    <!--/* avatar hover layer */-->
+                    <div class="absolute top-0 hidden group-hover:flex z-1 size-full justify-center items-center rounded-full bg-lighter-darker-transparent">
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full p-6 flex flex-col justify-start items-center">
+                <div class="w-full mb-9 flex justify-end">
+                    <button id="edit-profile-button"
+                            th:if="${#authentication.principal != 'anonymousUser' && #authentication.getPrincipal().getUsername() == user.getEmail()}"
+                            class="w-[7.5em] p-3 rounded-full text-center font-semibold btn-accent">Edit Profile
+                    </button>
+
+                    <form th:action="@{/users/{id}/follow(id = ${user.getId()})}" method="POST"
+                          th:if="${#authentication.principal == 'anonymousUser'}"
+                          class="w-[7.5em] p-3 rounded-full text-center font-semibold btn-accent">
+                        <button type="submit">Follow</button>
+                    </form>
+
+                    <th:block th:if="${#authentication.principal != 'anonymousUser' && #authentication.getPrincipal().getUsername() != user.getEmail()}">
+                        <form th:action="@{/users/{id}/follow(id = ${user.getId()})}" method="POST"
+                              th:if="${@followServiceImpl.findById(#authentication.getPrincipal().getUser(), user).isEmpty()}"
+                              class="w-[7.5em] p-3 rounded-full text-center font-semibold btn-accent">
+                            <button type="submit">Follow</button>
+                        </form>
+
+                        <form th:action="@{/users/{id}/unfollow(id = ${user.getId()})}" method="POST"
+                              th:if="${@followServiceImpl.findById(#authentication.getPrincipal().getUser(), user).isPresent()}"
+                              class="w-[7.5em] p-3 rounded-full text-center font-semibold btn-accent">
+                            <button type="submit">Unfollow</button>
+                        </form>
+                    </th:block>
+                </div>
+
+                <div class="w-full flex flex-col justify-start items-start gap-3">
+                    <div>
+                        <span class="block font-bold text-2xl" th:text="${user.getDisplayName()}">Username</span>
+                        <span class="block text-lg text-dark-faded"
+                              th:text="${'@' + user.getUsername()}">@username</span>
+                    </div>
+
+                    <div th:if="${profile.getBio() != null}">
+                        <p th:text="${profile.getBio()}"></p>
+                    </div>
+
+                    <div class="w-full flex gap-3">
+                        <div>
+                            <span id="following-number" class="font-semibold" th:text="${@followServiceImpl.countByFollowerId(user.getId())}">0</span>
+                            <span class="text-dark-faded">Following</span>
+                        </div>
+
+                        <div>
+                            <span id="follower-number" class="font-semibold" th:text="${@followServiceImpl.countByFollowedId(user.getId())}">0</span>
+                            <span class="text-dark-faded">Followers</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:unless="${user != null && profile != null}"
+             class="w-full min-h-[90%] md:min-h-full p-3 flex flex-col justify-center items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-file-earmark-x-fill aspect-square w-32 mb-6 fill-dark"
+                 viewBox="0 0 16 16">
+                <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1M6.854 7.146 8 8.293l1.146-1.147a.5.5 0 1 1 .708.708L8.707 9l1.147 1.146a.5.5 0 0 1-.708.708L8 9.707l-1.146 1.147a.5.5 0 0 1-.708-.708L7.293 9 6.146 7.854a.5.5 0 1 1 .708-.708"/>
+            </svg>
+            <span class="font-medium text-xl text-dark">This content does not exist</span>
+        </div>
+    </div>
+</main>
+
+<div id="user-banner-overlay" class="hidden z-1 fixed size-full">
+    <div class="relative size-full flex justify-center items-center bg-black-transparent">
+        <div class="absolute top-3 right-3 flex gap-3">
+            <form th:if="${#authentication.principal != 'anonymousUser' && #authentication.getPrincipal().getUsername() == user.getEmail()}"
+                  id="banner-upload-form" th:action="${'/users/' + user.getId() + '/banner/upload'}" method="POST"
+                  enctype="multipart/form-data">
+                <label class="h-12 aspect-square p-1 flex justify-center items-center rounded-lg btn-black-transparent">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-upload aspect-square w-[60%]"
+                         viewBox="0 0 16 16">
+                        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
+                        <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708z"/>
+                    </svg>
+                    <input id="banner-overlay-image-input" type="file" accept="image/*" name="image" class="hidden"/>
+                </label>
+            </form>
+
+            <button id="banner-overlay-close-button"
+                    class="h-12 aspect-square p-1 flex justify-center items-center rounded-lg btn-black-transparent">
+                <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-x-lg aspect-square w-[60%]" viewBox="0 0 16 16">
+                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                </svg>
+            </button>
+        </div>
+
+        <img th:if="${profile.getBanner() != null}" th:id="user-banner-image"
+             class="aspect-auto max-w-[90%] max-h-[90%] object-cover object-center rounded-lg"
+             th:src="@{/users/{id}/banner(id = ${user.getId()})}"
+             th:alt="${user.getDisplayName() + ' banner image'}"/>
+    </div>
+</div>
+
+<div id="user-avatar-overlay" class="hidden z-1 fixed size-full">
+    <div class="relative size-full flex justify-center items-center bg-black-transparent">
+        <div class="absolute top-3 right-3 flex gap-3">
+            <form th:if="${#authentication.principal != 'anonymousUser' && #authentication.getPrincipal().getUsername() == user.getEmail()}"
+                  id="avatar-upload-form" th:action="${'/users/' + user.getId() + '/avatar/upload'}" method="POST"
+                  enctype="multipart/form-data">
+                <label class="h-12 aspect-square p-1 flex justify-center items-center rounded-lg btn-black-transparent">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-upload aspect-square w-[60%]"
+                         viewBox="0 0 16 16">
+                        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
+                        <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708z"/>
+                    </svg>
+                    <input id="avatar-overlay-image-input" type="file" accept="image/*" name="image" class="hidden"
+                           data-avatar/>
+                </label>
+            </form>
+
+            <button id="avatar-overlay-close-button"
+                    class="h-12 aspect-square p-1 flex justify-center items-center rounded-lg btn-black-transparent">
+                <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-x-lg aspect-square w-[60%]" viewBox="0 0 16 16">
+                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                </svg>
+            </button>
+        </div>
+
+        <img th:id="overlay-avatar-image" th:if="${profile.getAvatar() != null}"
+             class="aspect-square max-w-[90%] max-h-[90%] object-cover object-center rounded-full"
+             th:src="@{/users/{id}/avatar(id = ${user.getId()})}"
+             th:alt="${user.getDisplayName() + ' avatar image'}"/>
+    </div>
+</div>
+
+<div th:if="${#authentication.principal != 'anonymousUser' && #authentication.getPrincipal().getUsername() == user.getEmail()}"
+     id="image-preview-overlay" class="hidden fixed z-1 size-full">
+    <div class="relative size-full flex justify-center items-center flex flex-col justify-center items-center gap-6 bg-black-transparent">
+        <img id="image-preview" src="" th:alt="${user.getDisplayName() + ' banner image'}"
+             class="aspect-auto max-w-[90%] max-h-[90%] object-cover object-center">
+
+        <div class="flex justify-center items-center gap-6">
+            <button id="cancel-upload-button"
+                    class="h-12 aspect-square p-1 flex justify-center items-center rounded-lg btn-light">
+                <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-x aspect-square w-[80%]" viewBox="0 0 16 16">
+                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                </svg>
+            </button>
+
+            <button id="confirm-upload-button"
+                    class="h-12 aspect-square p-1 flex justify-center items-center rounded-lg btn-accent">
+                <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-check-lg aspect-square w-[60%]"
+                     viewBox="0 0 16 16">
+                    <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    function closeOverlay(overlay) {
+        overlay.classList.add("hidden");
+        overlay.classList.remove("block");
+    }
+
+    function openOverlay(overlay) {
+        overlay.classList.remove("hidden");
+        overlay.classList.add("block");
+    }
+
+    const bannerFrame = document.getElementById("user-banner-frame");
+    const bannerOverlay = document.getElementById("user-banner-overlay");
+    const bannerOverlayCloseBtn = document.getElementById("banner-overlay-close-button");
+    const avatarFrame = document.getElementById("user-avatar-frame");
+    const avatarOverlay = document.getElementById("user-avatar-overlay");
+    const avatarOverlayCloseBtn = document.getElementById("avatar-overlay-close-button");
+
+    bannerFrame.addEventListener("click", () => {
+        openOverlay(bannerOverlay)
+    });
+    bannerOverlayCloseBtn.addEventListener("click", () => {
+        closeOverlay(bannerOverlay)
+    });
+    avatarFrame.addEventListener("click", () => {
+        openOverlay(avatarOverlay)
+    });
+    avatarOverlayCloseBtn.addEventListener("click", () => {
+        closeOverlay(avatarOverlay)
+    });
+</script>
+<script th:if="${#authentication.principal != 'anonymousUser' && #authentication.getPrincipal().getUsername() == user.getEmail()}"
+        th:inline="javascript">
+    const cancelUploadBtn = document.getElementById("cancel-upload-button");
+    const confirmUploadBtn = document.getElementById("confirm-upload-button");
+    const bannerUploadForm = document.getElementById("banner-upload-form");
+    const avatarUploadForm = document.getElementById("avatar-upload-form");
+
+    cancelUploadBtn.addEventListener("click", () => {
+        closeOverlay(imagePreviewOverlay);
+    });
+
+    const imagePreviewOverlay = document.getElementById("image-preview-overlay");
+    const imagePreview = document.getElementById("image-preview");
+    const MAX_SIZE = 128 * 1024 * 1024;  // 128 MB
+
+    function previewImage(fileInput, originalImage, overlay) {
+        const file = fileInput.files[0];
+
+        if (!file) {
+            alert("No image was selected");
+            return;
+        }
+
+        if (file.size > MAX_SIZE) {
+            alert("Image must be smaller than 128 MB");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            imagePreview.src = e.target.result;
+
+            if (fileInput.getAttribute("data-avatar") != null) {
+                imagePreview.style.width = `80%`;
+                imagePreview.style.height = `80%`;
+                imagePreview.classList.add("rounded-full");
+                imagePreview.classList.remove("rounded-lg");
+                confirmUploadBtn.addEventListener("click", () => {
+                    avatarUploadForm.submit();
+                })
+            } else {
+                imagePreview.style.width = `${originalImage.getBoundingClientRect().width}px`;
+                imagePreview.style.height = `${originalImage.getBoundingClientRect().height}px`;
+                imagePreview.classList.add("rounded-lg");
+                imagePreview.classList.remove("rounded-full");
+                confirmUploadBtn.addEventListener("click", () => {
+                    bannerUploadForm.submit();
+                })
+            }
+
+            closeOverlay(overlay);
+            imagePreviewOverlay.classList.add("flex");
+            imagePreviewOverlay.classList.remove("hidden");
+        }
+        reader.readAsDataURL(file);
+    }
+
+    const bannerOverlayImageInput = document.getElementById("banner-overlay-image-input");
+    const avatarOverlayImageInput = document.getElementById("avatar-overlay-image-input");
+    const bannerImage = document.getElementById("user-banner-image");
+    const avatarImage = document.getElementById("user-avatar-image");
+
+    bannerOverlayImageInput.addEventListener("change", () => {
+        previewImage(bannerOverlayImageInput, bannerImage, bannerOverlay);
+    });
+    avatarOverlayImageInput.addEventListener("change", () => {
+        previewImage(avatarOverlayImageInput, avatarImage, avatarOverlay);
+    });
+</script>
+</body>
+</html>
