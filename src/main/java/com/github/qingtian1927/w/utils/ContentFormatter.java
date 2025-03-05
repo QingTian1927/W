@@ -8,6 +8,10 @@ public final class ContentFormatter {
     private ContentFormatter() {}
 
     public static String formatLineBreak(String content) {
+        if (content == null) {
+            return null;
+        }
+
         String result = content.replaceAll(CR_LF, "<br>");
         result = result.replaceAll(LF, "<br>");
         result = result.replaceAll(CR, "<br>");
