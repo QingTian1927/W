@@ -33,7 +33,12 @@
             <tbody>
             <tr th:each="user : ${users}">
                 <td th:text="${user.getId()}" class="p-3 text-dark border-y border-collapse"></td>
-                <td class="p-3 text-dark border-y border-collapse" th:text="${'@' + user.getUsername()}"></td>
+                <td class="p-3 text-dark border-y border-collapse">
+                    <a th:href="@{/users/{id}(id = ${user.getId()})}"
+                       th:text="${'@' + user.getUsername()}"
+                       class="underline text-success"
+                    ></a>
+                </td>
                 <td class="p-3 text-dark border-y border-collapse" th:text="${user.getDisplayName()}"></td>
                 <td class="max-w-full p-3 text-dark border-y border-collapse overflow-hidden text-ellipsis"
                     th:text="${user.getAge()}"></td>
@@ -75,8 +80,8 @@
             </tbody>
         </table>
 
-        <div class="grow w-full flex justify-center items-end gap-3">
-            <a th:href="@{/admin/users/1}"
+        <div th:with="entity = ${'users'}" class="grow w-full flex justify-center items-end gap-3">
+            <a th:href="@{/admin/{entity}/1(entity = ${entity})}"
                class="aspect-square h-8 p-1 flex justify-center items-center rounded-md btn-pagination"
                th:classappend="${(pageNumber > 1) ? 'visible' : 'invisible'}">
                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -88,7 +93,7 @@
                 </svg>
             </a>
 
-            <a th:href="@{/admin/users/{prev}(prev = ${pageNumber - 1})}"
+            <a th:href="@{/admin/{entity}/{prev}(prev = ${pageNumber - 1}, entity = ${entity})}"
                class="aspect-square h-8 p-1 flex justify-center items-center rounded-md btn-pagination"
                th:classappend="${(page.hasPrevious()) ? 'visible' : 'invisible'}">
                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -102,7 +107,7 @@
                 <span th:text="${pageNumber + ' of ' + page.getTotalPages() + ' pages'}"></span>
             </div>
 
-            <a th:href="@{/admin/users/{next}(next = ${pageNumber + 1})}"
+            <a th:href="@{/admin/{entity}/{next}(next = ${pageNumber + 1}, entity = ${entity})}"
                class="aspect-square h-8 p-1 flex justify-center items-center rounded-md btn-pagination"
                th:classappend="${(page.hasNext()) ? 'visible' : 'invisible'}">
                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -112,7 +117,7 @@
                 </svg>
             </a>
 
-            <a th:href="@{/admin/users/{last}(last = ${page.getTotalPages()})}"
+            <a th:href="@{/admin/{entity}/{last}(last = ${page.getTotalPages()}, entity = ${entity})}"
                class="aspect-square h-8 p-1 flex justify-center items-center rounded-md btn-pagination"
                th:classappend="${(pageNumber < page.getTotalPages()) ? 'visible' : 'invisible'}">
                 <svg xmlns="http://www.w3.org/2000/svg"
