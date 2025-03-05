@@ -10,6 +10,7 @@
     --lightgreen: #84D9BA;
     --browngreen: #718C49;
     --purple: #BF3B84;
+    --red: #BA5659;
     --accent: #3C7363;
 }
 
@@ -259,6 +260,42 @@
 
 .btn-black-transparent svg {
     filter: invert(91%) sepia(90%) saturate(3252%) hue-rotate(178deg) brightness(110%) contrast(99%);
+}
+
+.btn-lock {
+    background-color: rgba(191, 59, 132, 0.4);
+}
+
+.btn-lock svg {
+    filter: invert(8%) sepia(14%) saturate(1285%) hue-rotate(110deg) brightness(91%) contrast(96%);
+}
+
+.btn-lock:hover {
+    background-color: rgba(191, 59, 132, 0.6);
+}
+
+.btn-reset-password {
+    background-color: rgba(113, 140, 73, 0.4);
+}
+
+.btn-reset-password svg {
+    filter: invert(8%) sepia(14%) saturate(1285%) hue-rotate(110deg) brightness(91%) contrast(96%);
+}
+
+.btn-reset-password:hover {
+    background-color: rgba(113, 140, 73, 0.6);
+}
+
+.btn-notify {
+    background-color: rgba(132, 217, 186, 0.4);
+}
+
+.btn-notify svg {
+    filter: invert(8%) sepia(14%) saturate(1285%) hue-rotate(110deg) brightness(91%) contrast(96%);
+}
+
+.btn-notify:hover {
+    background-color: rgba(132, 217, 186, 0.6);
 }
 
 .border-lighter {
