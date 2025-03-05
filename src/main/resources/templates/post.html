@@ -40,7 +40,7 @@
 
             </div>
 
-            <div class="size-full flex flex-col justify-start items-center gap-3">
+            <div class="size-full flex flex-col justify-start items-center">
                 <th:block th:if="${comments != null}" th:each="comment : ${comments}"
                           th:insert="~{fragments/comment :: comment (comment = ${comment}, post = ${post})}">
                 </th:block>

@@ -1,5 +1,5 @@
 <article th:fragment="comment (comment, post)" xmlns:th="http://www.thymeleaf.org" th:if="${post != null}"
-         class="w-full p-3 flex flex-col justify-start items-start gap-3 rounded-lg shadow-sm border-2 border-light">
+         class="w-full p-3 mb-3 last:mb-0 flex flex-col justify-start items-start gap-3 rounded-lg shadow-sm border-2 border-light">
     <div th:with="profile = ${@profileServiceImpl.findById(comment.getUser().getId())}, user = ${comment.getUser()}"
          class="w-full flex justify-start items-center gap-3">
         <a th:href="@{/users/{id}(id = ${user.getId()})}"
