@@ -1,5 +1,6 @@
 package com.github.qingtian1927.w.model;
 
+import com.github.qingtian1927.w.utils.ContentFormatter;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -44,7 +45,7 @@ public class Post {
 
     public String getContent() {
         if (repost == null) {
-            return this.content;
+            return ContentFormatter.formatLineBreak(this.content);
         }
 
         Post currentPost = this.repost;
@@ -55,6 +56,6 @@ public class Post {
             currentPost = currentPost.getRepost();
         }
 
-        return content;
+        return ContentFormatter.formatLineBreak(content);
     }
 }

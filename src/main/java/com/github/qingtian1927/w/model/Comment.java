@@ -1,5 +1,6 @@
 package com.github.qingtian1927.w.model;
 
+import com.github.qingtian1927.w.utils.ContentFormatter;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,7 +29,7 @@ public class Comment {
     @ToString.Exclude
     private Post post;
 
-    @Column(name = "content", nullable = false, length = 300, columnDefinition = "NVARCHAR(300)")
+    @Column(name = "content", nullable = false, length = 300, columnDefinition = "NVARCHAR(MAX)")
     private String content;
 
     @ManyToOne
@@ -55,5 +56,9 @@ public class Comment {
         this.post = post;
         this.content = content;
         this.replyTo = replyTo;
+    }
+
+    public String getContent() {
+        return ContentFormatter.formatLineBreak(this.content);
     }
 }

@@ -29,7 +29,7 @@
     </div>
 
     <p class="max-w-full text-justify text-wrap break-words text-dark"
-       th:text="${comment.getContent()}"></p>
+       th:utext="${comment.getContent()}"></p>
 
     <form th:id="${'comment-form-' + comment.getId()}"
           th:action="@{/comment/{id}(id = ${comment.getId()})}" method="POST"

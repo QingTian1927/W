@@ -94,7 +94,7 @@
                     </div>
 
                     <div th:if="${profile.getBio() != null}">
-                        <p th:text="${profile.getBio()}"></p>
+                        <p th:utext="${profile.getBio()}"></p>
                     </div>
 
                     <div class="w-full flex gap-3">

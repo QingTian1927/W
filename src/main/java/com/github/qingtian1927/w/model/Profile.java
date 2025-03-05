@@ -1,5 +1,6 @@
 package com.github.qingtian1927.w.model;
 
+import com.github.qingtian1927.w.utils.ContentFormatter;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -53,5 +54,9 @@ public class Profile {
 
     public void setBanner(MultipartFile banner) throws IOException {
         this.banner = banner.getBytes();
+    }
+
+    public String getBio() {
+        return ContentFormatter.formatLineBreak(this.bio);
     }
 }
