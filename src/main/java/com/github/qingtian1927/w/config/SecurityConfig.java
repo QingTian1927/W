@@ -39,7 +39,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain SecurityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/actuator/**", "/signup", "/login", "/css/**", "/users/**", "/post/**", "/comment/**", "/admin/**").permitAll()
+                .requestMatchers("/", "/actuator/**", "/signup", "/login", "/css/**", "/users/**", "/post/**", "/comment/**").permitAll()
+                .requestMatchers("/admin/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
         ).formLogin(login -> login
                 .usernameParameter("email")
