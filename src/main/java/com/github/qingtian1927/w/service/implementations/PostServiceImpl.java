@@ -5,6 +5,8 @@ import com.github.qingtian1927.w.model.User;
 import com.github.qingtian1927.w.repository.PostRepository;
 import com.github.qingtian1927.w.service.interfaces.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -61,5 +63,10 @@ public class PostServiceImpl implements PostService {
     @Override
     public long count() {
         return postRepository.count();
+    }
+
+    @Override
+    public Page<Post> findAll(Pageable pageable) {
+        return postRepository.findAll(pageable);
     }
 }

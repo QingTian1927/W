@@ -4,6 +4,8 @@ import com.github.qingtian1927.w.model.User;
 import com.github.qingtian1927.w.repository.UserRepository;
 import com.github.qingtian1927.w.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +46,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> findAll() {
-        return this.userRepository.findAll();
+        return userRepository.findAll();
+    }
+
+    @Override
+    public Page<User> findAll(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
     @Override
