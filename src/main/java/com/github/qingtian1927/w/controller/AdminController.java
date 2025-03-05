@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 @Controller
 public class AdminController {
     private static final int USER_PAGE_SIZE = 30;
+    private static final int POST_PAGE_SIZE = 15;
+
     private final PostService postService;
     private final UserService userService;
 
@@ -79,8 +81,8 @@ public class AdminController {
             }
 
             model.addAttribute("pageNumber", page);
-            model.addAttribute("page", postService.findAll(PageRequest.of(page - 1, USER_PAGE_SIZE)));
-            return "/admin/users";
+            model.addAttribute("page", postService.findAll(PageRequest.of(page - 1, POST_PAGE_SIZE)));
+            return "/admin/posts";
         }
         return "redirect:/login";
     }
