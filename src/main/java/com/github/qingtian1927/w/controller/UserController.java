@@ -98,7 +98,7 @@ public class UserController {
         return "redirect:/users/" + id;
     }
 
-    @GetMapping("users/{id}/banner")
+    @GetMapping("/users/{id}/banner")
     public ResponseEntity<byte[]> getBanner(@PathVariable Long id) {
         Optional<Profile> profile = profileService.findById(id);
         if (profile.isEmpty() || profile.get().getBanner() == null) {
@@ -134,7 +134,7 @@ public class UserController {
         return "redirect:/users/" + id;
     }
 
-    @GetMapping("users/{id}/avatar")
+    @GetMapping("/users/{id}/avatar")
     public ResponseEntity<byte[]> getAvatar(@PathVariable Long id) {
         Optional<Profile> profile = profileService.findById(id);
         if (profile.isEmpty() || profile.get().getAvatar() == null) {
@@ -146,7 +146,7 @@ public class UserController {
         return new ResponseEntity<>(profile.get().getAvatar(), headers, HttpStatus.OK);
     }
 
-    @PostMapping("users/{id}/follow")
+    @PostMapping("/users/{id}/follow")
     public String followUser(@PathVariable Long id, Model model) {
         Optional<User> followedUser = userService.findById(id);
 
@@ -170,7 +170,7 @@ public class UserController {
         return "redirect:/users/" + id;
     }
 
-    @PostMapping("users/{id}/unfollow")
+    @PostMapping("/users/{id}/unfollow")
     public String unfollowUser(@PathVariable Long id, Model model) {
         Optional<User> followedUser = userService.findById(id);
 
