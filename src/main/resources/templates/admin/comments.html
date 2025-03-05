@@ -1,0 +1,125 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>W - Comments</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/search_input.css}">
+    <link rel="stylesheet" th:href="@{/css/colors.css}">
+</head>
+<body class="max-w-svw min-h-svh flex justify-end items-start bg-light-faded text-dark">
+<aside class="fixed z-10 bottom-0 left-0 md:top-0 h-[10%] md:h-full w-full md:w-[30%] xl:w-[20%] p-3 flex flex-col justify-center gap-12">
+    <th:block th:insert="~{fragments/admin_sidebar :: admin_sidebar (page = ${'comments'})}"></th:block>
+</aside>
+<main class="min-h-[90%] md:min-h-full w-full md:w-[70%] xl:w-[80%] p-3 pb-0 md:pb-3 flex flex-col justify-center items-center">
+    <div th:with="comments = ${page.getContent()}"
+         class="grow min-h-full size-full p-6 flex flex-col rounded-lg shadow-md md:shadow-lg bg-lighter text-dark">
+        <th:block th:insert="~{fragments/viewfeed_header}"></th:block>
+
+        <h1 class="mt-9 md:mt-6 mb-12 text-center font-bold text-4xl">Comments List</h1>
+
+        <table th:if="${comments != null}" class="min-h-full w-full table-fixed break-words">
+            <thead>
+            <tr class="text-left">
+                <th class="w-[10%] p-3 bg-dark text-white border-y border-collapse">#</th>
+                <th class="w-[40%] p-3 bg-dark text-white border-y border-collapse">Content</th>
+                <th class="p-3 bg-dark text-white border-y border-collapse">Reply To</th>
+                <th class="w-[15%] p-3 bg-dark text-white border-y border-collapse">Username</th>
+                <th class="w-[15%] p-3 bg-dark text-white border-y border-collapse">Date</th>
+                <th class="p-3 bg-dark text-white border-y border-collapse">Option</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="comment : ${comments}">
+                <td th:text="${comment.getId()}" class="p-3 text-dark border-y border-collapse"></td>
+                <td class="p-3 text-dark border-y border-collapse" th:text="${comment.getContent()}"></td>
+                <td class="p-3 text-dark border-y border-collapse" th:text="${(comment.getReplyTo() == null) ? 'NULL' : comment.getReplyTo().getId()}"></td>
+                <td class="p-3 text-dark border-y border-collapse">
+                    <a th:href="@{/users/{id}(id = ${comment.getUser().getId()})}"
+                       th:text="${'@' + comment.getUser().getUsername()}"
+                       class="underline text-success"></a>
+                </td>
+                <td class="max-w-full p-3 text-dark border-y border-collapse overflow-hidden text-ellipsis"
+                    th:text="${comment.getUpdatedDate()}"></td>
+                <td class="p-3 text-dark border-y border-collapse">
+                    <form th:action="@{/comment/{id}(id = ${comment.getId()})}" method="POST"
+                          class="max-w-full mb-0 flex flex-wrap gap-3">
+                        <button th:formaction="@{/comment/{id}/note(id = ${comment.getId()})}"
+                                class="aspect-square h-10 flex justify-center items-center rounded-lg btn-notify">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 class="bi bi-sticky-fill fill-dark size-[1.5em]" viewBox="0 0 16 16">
+                                <path d="M2.5 1A1.5 1.5 0 0 0 1 2.5v11A1.5 1.5 0 0 0 2.5 15h6.086a1.5 1.5 0 0 0 1.06-.44l4.915-4.914A1.5 1.5 0 0 0 15 8.586V2.5A1.5 1.5 0 0 0 13.5 1zm6 8.5a1 1 0 0 1 1-1h4.396a.25.25 0 0 1 .177.427l-5.146 5.146a.25.25 0 0 1-.427-.177z"/>
+                            </svg>
+                        </button>
+
+                        <button th:formaction="@{//{id}/delete(id = ${comment.getId()})}"
+                                class="aspect-square h-10 flex justify-center items-center rounded-lg btn-lock">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 class="bi bi-trash-fill fill-dark size-[1.5em]" viewBox="0 0 16 16">
+                                <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                            </svg>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div th:with="entity = ${'comments'}" class="grow w-full flex justify-center items-end gap-3">
+            <a th:href="@{/admin/{entity}/1(entity = ${entity})}"
+               class="aspect-square h-8 p-1 flex justify-center items-center rounded-md btn-pagination"
+               th:classappend="${(pageNumber > 1) ? 'visible' : 'invisible'}">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="bi bi-chevron-double-left fill-dark size-[1em]" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                          d="M8.354 1.646a.5.5 0 0 1 0 .708L2.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
+                    <path fill-rule="evenodd"
+                          d="M12.354 1.646a.5.5 0 0 1 0 .708L6.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
+                </svg>
+            </a>
+
+            <a th:href="@{/admin/{entity}/{prev}(prev = ${pageNumber - 1}, entity = ${entity})}"
+               class="aspect-square h-8 p-1 flex justify-center items-center rounded-md btn-pagination"
+               th:classappend="${(page.hasPrevious()) ? 'visible' : 'invisible'}">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="bi bi-chevron-left fill-dark size-[1em]" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                          d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
+                </svg>
+            </a>
+
+            <div class="min-h-8 flex justify-center items-center">
+                <span th:text="${pageNumber + ' of ' + page.getTotalPages() + ' pages'}"></span>
+            </div>
+
+            <a th:href="@{/admin/{entity}/{next}(next = ${pageNumber + 1}, entity = ${entity})}"
+               class="aspect-square h-8 p-1 flex justify-center items-center rounded-md btn-pagination"
+               th:classappend="${(page.hasNext()) ? 'visible' : 'invisible'}">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="bi bi-chevron-right fill-dark size-[1em]" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                          d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/>
+                </svg>
+            </a>
+
+            <a th:href="@{/admin/{entity}/{last}(last = ${page.getTotalPages()}, entity = ${entity})}"
+               class="aspect-square h-8 p-1 flex justify-center items-center rounded-md btn-pagination"
+               th:classappend="${(pageNumber < page.getTotalPages()) ? 'visible' : 'invisible'}">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="bi bi-chevron-double-right fill-dark size-[1em]" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                          d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708"/>
+                    <path fill-rule="evenodd"
+                          d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+
+    <!--/* mobile layout action menu spacer */-->
+    <div class="block md:hidden h-[10svh] w-full"></div>
+</main>
+</body>
+</html>

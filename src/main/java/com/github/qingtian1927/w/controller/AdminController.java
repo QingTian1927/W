@@ -1,5 +1,6 @@
 package com.github.qingtian1927.w.controller;
 
+import com.github.qingtian1927.w.service.interfaces.CommentService;
 import com.github.qingtian1927.w.service.interfaces.PostService;
 import com.github.qingtian1927.w.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +16,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class AdminController {
     private static final int USER_PAGE_SIZE = 30;
     private static final int POST_PAGE_SIZE = 15;
+    private static final int COMMENT_PAGE_SIZE = 15;
 
     private final PostService postService;
     private final UserService userService;
+    private final CommentService commentService;
 
     @Autowired
-    public AdminController(PostService postService, UserService userService) {
+    public AdminController(PostService postService, UserService userService, CommentService commentService) {
         this.postService = postService;
         this.userService = userService;
+        this.commentService = commentService;
     }
 
     @GetMapping(value = {"/admin/dashboard"})
@@ -83,6 +87,30 @@ public class AdminController {
             model.addAttribute("pageNumber", page);
             model.addAttribute("page", postService.findAll(PageRequest.of(page - 1, POST_PAGE_SIZE)));
             return "/admin/posts";
+        }
+        return "redirect:/login";
+    }
+
+    @GetMapping(value = {"/admin/comments"})
+    public String commentsRedirect() {
+        return "redirect:/admin/comments/1";
+    }
+
+    @GetMapping(value = {"/admin/comments/{page}"})
+    public String comments(@PathVariable int page, Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (
+                authentication.getAuthorities().stream()
+                        .anyMatch(r -> r.getAuthority().equals("ADMIN"))
+        ) {
+            if (page - 1 < 0) {
+                model.addAttribute("error", "Invalid page number");
+                return "redirect:/error";
+            }
+
+            model.addAttribute("pageNumber", page);
+            model.addAttribute("page", commentService.findAll(PageRequest.of(page - 1, COMMENT_PAGE_SIZE)));
+            return "/admin/comments";
         }
         return "redirect:/login";
     }

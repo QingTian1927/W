@@ -4,6 +4,8 @@ import com.github.qingtian1927.w.model.Comment;
 import com.github.qingtian1927.w.model.CommentLike;
 import com.github.qingtian1927.w.model.Post;
 import com.github.qingtian1927.w.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,4 +25,5 @@ public interface CommentService {
     CommentLike like(User user, Comment comment);
     void unlike(User user, Comment comment);
     long count();
+    Page<Comment> findAll(Pageable pageable);
 }

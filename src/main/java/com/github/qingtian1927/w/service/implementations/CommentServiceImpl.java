@@ -5,6 +5,8 @@ import com.github.qingtian1927.w.repository.CommentLikeRepository;
 import com.github.qingtian1927.w.repository.CommentRepository;
 import com.github.qingtian1927.w.service.interfaces.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -89,5 +91,10 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public long count() {
         return this.commentRepository.count();
+    }
+
+    @Override
+    public Page<Comment> findAll(Pageable pageable) {
+        return this.commentRepository.findAll(pageable);
     }
 }
