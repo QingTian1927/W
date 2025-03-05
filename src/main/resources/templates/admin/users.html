@@ -43,9 +43,15 @@
                 <td class="max-w-full p-3 text-dark border-y border-collapse overflow-hidden text-ellipsis"
                     th:text="${user.getAge()}"></td>
                 <td class="p-3 text-dark border-y border-collapse">
-                    <form th:action="@{/users/{id}(id = ${user.getId()})}" method="POST"
+                    <form th:id="${'user-form-' + user.getId()}" th:action="@{/users/{id}(id = ${user.getId()})}"
+                          method="POST"
                           class="max-w-full mb-0 flex flex-wrap gap-3">
-                        <button th:formaction="@{/users/{id}/notify(id = ${user.getId()})}"
+                        <input type="hidden" name="redirect" th:value="@{/admin/posts/{page}(page = ${pageNumber})}">
+                        <input type="hidden" name="type" value="admin">
+                        <input type="hidden" th:id="${'notify-content-' + user.getId()}" name="content">
+
+                        <button th:id="${'notify-button-' + user.getId()}" type="submit"
+                                th:formaction="@{/users/{id}/notify(id = ${user.getId()})}"
                                 class="aspect-square h-10 flex justify-center items-center rounded-lg btn-notify">
                             <svg xmlns="http://www.w3.org/2000/svg"
                                  class="bi bi-envelope-fill size-[1.5em]" viewBox="0 0 16 16">
@@ -75,6 +81,20 @@
                             </svg>
                         </button>
                     </form>
+
+                    <script th:inline="javascript">
+                        /*<![CDATA[*/
+                        document.getElementById("notify-button-" + [[${user.getId()}]]).addEventListener("click", (e) => {
+                            e.preventDefault();
+                            const sendButton = document.getElementById("overlay-send");
+                            const notificationOverlay = document.getElementById("overlay-notification-input");
+
+                            sendButton.value = [[${user.getId()}]];
+                            notificationOverlay.classList.remove("hidden");
+                            notificationOverlay.classList.add("flex");
+                        });
+                        /*]]>*/
+                    </script>
                 </td>
             </tr>
             </tbody>
@@ -134,5 +154,55 @@
     <!--/* mobile layout action menu spacer */-->
     <div class="block md:hidden h-[10svh] w-full"></div>
 </main>
+
+<div id="overlay-notification-input"
+     class="hidden fixed z-20 top-0 left-0 size-full justify-center items-center bg-darker-transparent">
+    <div class="min-h-[50%] min-w-[70%] max-h-[90%] max-w-[90%] p-6 flex flex-col justify-center items-center gap-6 rounded-xl bg-lighter">
+        <header class="w-full text-center">
+            <h2 class="text-2xl font-bold text-dark mb-1">Send Notification</h2>
+            <p class="text-dark-faded">Send a message to the selected user</p>
+        </header>
+
+        <div class="grow w-full">
+            <label class="min-h-72 w-full h-full rounded-lg bg-light-faded">
+                     <textarea id="notify-input" minlength="1" maxlength="256"
+                               placeholder="Write your message"
+                               class="min-h-72 size-full p-3 rounded-lg bg-light-faded search-input"></textarea>
+            </label>
+        </div>
+
+        <div class="flex flex-wrap justify-center items-center gap-3">
+            <button id="overlay-send" type="button" class="w-32 p-3 font-medium rounded-full btn-accent">
+                Send
+            </button>
+
+            <button id="overlay-close" type="button" class="w-32 p-3 font-medium rounded-full btn-pagination">
+                Cancel
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("overlay-close").addEventListener("click", () => {
+            const notificationOverlay = document.getElementById("overlay-notification-input");
+            notificationOverlay.classList.add("hidden");
+            notificationOverlay.classList.remove("flex");
+        });
+
+        const overlaySendButton = document.getElementById("overlay-send");
+        const notifyInput = document.getElementById("notify-input");
+
+        overlaySendButton.addEventListener("click", () => {
+            const userId = overlaySendButton.value;
+            const userForm = document.getElementById(`user-form-${userId}`);
+            const notifyButton = document.getElementById(`notify-button-${userId}`);
+            const notifyContent = document.getElementById(`notify-content-${userId}`);
+
+            notifyContent.value = notifyInput.value;
+            userForm.action = notifyButton.formAction;
+            userForm.submit();
+        });
+    </script>
+</div>
 </body>
 </html>

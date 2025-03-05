@@ -1,13 +1,9 @@
 package com.github.qingtian1927.w.controller;
 
-import com.github.qingtian1927.w.model.CustomUserDetails;
-import com.github.qingtian1927.w.model.Follow;
-import com.github.qingtian1927.w.model.Profile;
-import com.github.qingtian1927.w.model.User;
+import com.github.qingtian1927.w.model.*;
+import com.github.qingtian1927.w.model.dto.NotificationForm;
 import com.github.qingtian1927.w.model.dto.SignUpForm;
-import com.github.qingtian1927.w.service.interfaces.FollowService;
-import com.github.qingtian1927.w.service.interfaces.ProfileService;
-import com.github.qingtian1927.w.service.interfaces.UserService;
+import com.github.qingtian1927.w.service.interfaces.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -29,12 +25,16 @@ public class UserController {
     private final UserService userService;
     private final ProfileService profileService;
     private final FollowService followService;
+    private final PostService postService;
+    private final NotificationService notificationService;
 
     @Autowired
-    public UserController(UserService userService, ProfileService profileService, FollowService followService) {
+    public UserController(UserService userService, ProfileService profileService, FollowService followService, PostService postService, NotificationService notificationService) {
         this.userService = userService;
         this.profileService = profileService;
         this.followService = followService;
+        this.postService = postService;
+        this.notificationService = notificationService;
     }
 
     @GetMapping("/users/{id}")
@@ -71,7 +71,7 @@ public class UserController {
     @PostMapping("/users/{id}/banner/upload")
     public String uploadBanner(@PathVariable Long id, @RequestParam("image") MultipartFile image, Model model, Authentication auth) {
         Optional<User> user = userService.findById(id);
-        if(user.isEmpty() || !user.get().getEmail().equals(auth.getName())) {
+        if (user.isEmpty() || !user.get().getEmail().equals(auth.getName())) {
             model.addAttribute("error", "Forbidden request: mismatching user credentials");
             return "redirect:/error";
         }
@@ -192,5 +192,52 @@ public class UserController {
 
         followService.deleteById(followerUser, followedUser.get());
         return "redirect:/users/" + id;
+    }
+
+    @PostMapping("/users/{id}/notify")
+    public String notifyUser(@PathVariable Long id, @ModelAttribute NotificationForm params, @RequestParam("redirect") String redirectPath, Model model) {
+        Optional<User> toUser = userService.findById(id);
+        if (toUser.isEmpty()) {
+            model.addAttribute("error", "Receiver user not found");
+            return "redirect:/error";
+        }
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth instanceof AnonymousAuthenticationToken) {
+            return "redirect:/login";
+        }
+
+        User fromUser = ((CustomUserDetails) auth.getPrincipal()).getUser();
+        Notification notification = new Notification();
+        notification.setToUser(toUser.get());
+
+        switch (params.getType().toLowerCase()) {
+            case Notification.ADMIN -> {
+                notification.setType(params.getType());
+                notification.setFromUser(fromUser);
+                notification.setContent(params.getContent());
+            }
+            case Notification.COMMENT, Notification.LIKE, Notification.REPOST -> {
+                Optional<Post> referencedPost = postService.findById(params.getReferencedPostId());
+                if (referencedPost.isEmpty()) {
+                    model.addAttribute("error", "Referenced post not found");
+                    return "redirect:/error";
+                }
+
+                notification.setType(params.getType());
+                notification.setFromUser(fromUser);
+                notification.setReferencedPost(referencedPost.get());
+            }
+            default -> {
+                notification.setType(Notification.GENERAL);
+                notification.setContent(params.getContent());
+            }
+        }
+
+        notificationService.save(notification);
+        if (redirectPath == null || redirectPath.isEmpty()) {
+            return "redirect:/";
+        }
+        return "redirect:" + redirectPath;
     }
 }
