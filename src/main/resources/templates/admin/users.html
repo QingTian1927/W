@@ -1,0 +1,87 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>W - Users</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/search_input.css}">
+    <link rel="stylesheet" th:href="@{/css/colors.css}">
+</head>
+<body class="max-w-svw min-h-svh flex justify-end items-start bg-light-faded text-dark">
+<aside class="fixed z-10 bottom-0 left-0 md:top-0 h-[10%] md:h-full w-full md:w-[30%] xl:w-[20%] p-3 flex flex-col justify-center gap-12">
+    <th:block th:insert="~{fragments/admin_sidebar :: admin_sidebar (page = ${'users'})}"></th:block>
+</aside>
+<main class="min-h-[90%] md:min-h-full w-full md:w-[70%] xl:w-[80%] p-3 pb-0 md:pb-3 flex flex-col justify-center items-center">
+    <div class="grow min-h-full size-full p-6 flex flex-col rounded-lg shadow-md md:shadow-lg bg-lighter text-dark">
+        <th:block th:insert="~{fragments/viewfeed_header}"></th:block>
+
+        <h1 class="mt-9 md:mt-6 mb-12 text-center font-bold text-4xl">Users List</h1>
+
+        <table th:if="${users != null}" class="min-h-full w-full table-fixed break-words">
+            <thead>
+            <tr class="text-left">
+                <th class="w-[10%] p-3 bg-dark text-white border-y border-collapse">#</th>
+                <th class="p-3 bg-dark text-white border-y border-collapse">Username</th>
+                <th class="p-3 bg-dark text-white border-y border-collapse">Display Name</th>
+                <th class="w-[15%] p-3 bg-dark text-white border-y border-collapse">Age</th>
+                <th class="p-3 bg-dark text-white border-y border-collapse">Option</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.getId()}" class="p-3 text-dark border-y border-collapse"></td>
+                <td class="p-3 text-dark border-y border-collapse" th:text="${'@' + user.getUsername()}"></td>
+                <td class="p-3 text-dark border-y border-collapse" th:text="${user.getDisplayName()}"></td>
+                <td class="max-w-full p-3 text-dark border-y border-collapse overflow-hidden text-ellipsis"
+                    th:text="${user.getAge()}"></td>
+                <td class="p-3 text-dark border-y border-collapse">
+                    <form th:action="@{/users/{id}(id = ${user.getId()})}" method="POST"
+                          class="mb-0 flex gap-3">
+                        <button th:formaction="@{/users/{id}/notify(id = ${user.getId()})}"
+                                class="aspect-square h-10 flex justify-center items-center rounded-lg btn-notify">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 class="bi bi-envelope-fill size-[1.5em]" viewBox="0 0 16 16">
+                                <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414zM0 4.697v7.104l5.803-3.558zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586zm3.436-.586L16 11.801V4.697z"/>
+                            </svg>
+                        </button>
+
+                        <button th:formaction="@{/users/{id}/reset(id = ${user.getId()})}"
+                                class="aspect-square h-10 flex justify-center items-center rounded-lg btn-reset-password">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 class="bi bi-key-fill size-[1.5em]" viewBox="0 0 16 16">
+                                <path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2M2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
+                            </svg>
+                        </button>
+
+                        <button th:with="action = ${(user.getIsNotBanned() == true) ? 'lock' : 'unlock'}"
+                                th:formaction="@{/users/{id}/{action}(id = ${user.getId()}, action = ${action})}"
+                                class="aspect-square h-10 flex justify-center items-center rounded-lg btn-lock"
+                        >
+                            <svg th:if="${action == 'lock'}" xmlns="http://www.w3.org/2000/svg"
+                                 class="bi bi-lock-fill size-[1.5em]" viewBox="0 0 16 16">
+                                <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2"/>
+                            </svg>
+
+                            <svg th:if="${action == 'unlock'}" xmlns="http://www.w3.org/2000/svg"
+                                 class="bi bi-unlock-fill size-[1.5em]" viewBox="0 0 16 16">
+                                <path d="M11 1a2 2 0 0 0-2 2v4a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h5V3a3 3 0 0 1 6 0v4a.5.5 0 0 1-1 0V3a2 2 0 0 0-2-2"/>
+                            </svg>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="grow w-full flex justify-center items-end">
+            <div>1</div>
+        </div>
+    </div>
+
+    <!--/* mobile layout action menu spacer */-->
+    <div class="block md:hidden h-[10svh] w-full"></div>
+</main>
+</body>
+</html>

@@ -57,6 +57,21 @@ public class MainController {
 
         model.addAttribute("posts", postService.listRecentPosts());
         model.addAttribute("users", userService.listRecentUsers());
-        return "dashboard";
+        return "/admin/dashboard";
     }
+
+    @GetMapping(value = {"/admin/users"})
+    public String users(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (
+                authentication instanceof AnonymousAuthenticationToken ||
+                        authentication.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("USER"))
+        ) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("users", userService.findAll());
+        return "/admin/users";
+    }
+
 }
