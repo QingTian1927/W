@@ -3,7 +3,9 @@ package com.github.qingtian1927.w.service.implementations;
 import com.github.qingtian1927.w.model.Post;
 import com.github.qingtian1927.w.model.User;
 import com.github.qingtian1927.w.repository.PostRepository;
+import com.github.qingtian1927.w.service.interfaces.CommentService;
 import com.github.qingtian1927.w.service.interfaces.PostService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,10 +16,12 @@ import java.util.*;
 @Service
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
+    private final CommentService commentService;
 
     @Autowired
-    public PostServiceImpl(PostRepository postRepository) {
+    public PostServiceImpl(PostRepository postRepository, CommentService commentService) {
         this.postRepository = postRepository;
+        this.commentService = commentService;
     }
 
     @Override
@@ -68,5 +72,15 @@ public class PostServiceImpl implements PostService {
     @Override
     public Page<Post> findAll(Pageable pageable) {
         return postRepository.findAll(pageable);
+    }
+
+    @Override
+    @Transactional
+    public void deleteById(Long id) {
+        Optional<Post> post = postRepository.findById(id);
+        if (post.isPresent()) {
+            commentService.deleteByPost(post.get());
+            postRepository.deleteById(id);
+        }
     }
 }

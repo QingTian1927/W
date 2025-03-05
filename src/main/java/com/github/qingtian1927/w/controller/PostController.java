@@ -6,6 +6,7 @@ import com.github.qingtian1927.w.model.dto.PostForm;
 import com.github.qingtian1927.w.service.interfaces.CommentService;
 import com.github.qingtian1927.w.service.interfaces.LikeService;
 import com.github.qingtian1927.w.service.interfaces.PostService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.Size;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -61,6 +62,28 @@ public class PostController {
             }
         }
         return "post";
+    }
+
+    @PostMapping("post/{id}/delete")
+    public String deletePost(@PathVariable Long id, @RequestParam("redirect") String redirectPath, Model model) {
+        Optional<Post> post = postService.findById(id);
+
+        if (post.isEmpty()) {
+            model.addAttribute("error", "Post does not exist");
+            return "redirect:/error";
+        }
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth instanceof AnonymousAuthenticationToken) {
+            return "redirect:/login";
+        }
+
+        postService.deleteById(post.get().getId());
+
+        if (redirectPath == null || redirectPath.isEmpty()) {
+            return "redirect:/";
+        }
+        return "redirect:" + redirectPath;
     }
 
     @PostMapping("/post/{id}/like")
@@ -232,5 +255,33 @@ public class PostController {
         this.commentService.unlike(user, comment.get());
 
         return "redirect:/post/" + post.getId();
+    }
+
+    @PostMapping("/comment/{id}/delete")
+    public String deleteComment(@PathVariable Long id, @RequestParam("redirect") String redirectPath, Model model) {
+        Optional<Comment> comment = commentService.findById(id);
+
+        if (comment.isEmpty()) {
+            model.addAttribute("error", "Comment does not exist");
+            return "redirect:/error";
+        }
+
+        Post post = comment.get().getPost();
+        if (post == null) {
+            model.addAttribute("error", "Post does not exist");
+            return "redirect:/error";
+        }
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth instanceof AnonymousAuthenticationToken) {
+            return "redirect:/login";
+        }
+
+        this.commentService.deleteById(comment.get().getId());
+
+        if (redirectPath == null || redirectPath.isEmpty()) {
+            return "redirect:/";
+        }
+        return "redirect:" + redirectPath;
     }
 }

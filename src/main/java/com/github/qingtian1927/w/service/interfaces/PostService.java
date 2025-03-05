@@ -19,4 +19,5 @@ public interface PostService {
     int countByRepost(Post post);
     long count();
     Page<Post> findAll(Pageable pageable);
+    void deleteById(Long id);
 }
