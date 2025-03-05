@@ -35,7 +35,8 @@
             <tr th:each="comment : ${comments}">
                 <td th:text="${comment.getId()}" class="p-3 text-dark border-y border-collapse"></td>
                 <td class="p-3 text-dark border-y border-collapse" th:text="${comment.getContent()}"></td>
-                <td class="p-3 text-dark border-y border-collapse" th:text="${(comment.getReplyTo() == null) ? 'NULL' : comment.getReplyTo().getId()}"></td>
+                <td class="p-3 text-dark border-y border-collapse"
+                    th:text="${(comment.getReplyTo() == null) ? 'NULL' : comment.getReplyTo().getId()}"></td>
                 <td class="p-3 text-dark border-y border-collapse">
                     <a th:href="@{/users/{id}(id = ${comment.getUser().getId()})}"
                        th:text="${'@' + comment.getUser().getUsername()}"
@@ -44,8 +45,11 @@
                 <td class="max-w-full p-3 text-dark border-y border-collapse overflow-hidden text-ellipsis"
                     th:text="${comment.getUpdatedDate()}"></td>
                 <td class="p-3 text-dark border-y border-collapse">
-                    <form th:action="@{/comment/{id}(id = ${comment.getId()})}" method="POST"
+                    <form th:id="${'comment-form-' + comment.getId()}"
+                          th:action="@{/comment/{id}(id = ${comment.getId()})}" method="POST"
                           class="max-w-full mb-0 flex flex-wrap gap-3">
+                        <input type="hidden" name="redirect" th:value="@{/admin/comments/{page}(page = ${pageNumber})}">
+
                         <button th:formaction="@{/comment/{id}/note(id = ${comment.getId()})}"
                                 class="aspect-square h-10 flex justify-center items-center rounded-lg btn-notify">
                             <svg xmlns="http://www.w3.org/2000/svg"
@@ -54,7 +58,8 @@
                             </svg>
                         </button>
 
-                        <button th:formaction="@{//{id}/delete(id = ${comment.getId()})}"
+                        <button type="submit" th:id="${'comment-delete-' + comment.getId()}"
+                                th:formaction="@{/comment/{id}/delete(id = ${comment.getId()})}"
                                 class="aspect-square h-10 flex justify-center items-center rounded-lg btn-lock">
                             <svg xmlns="http://www.w3.org/2000/svg"
                                  class="bi bi-trash-fill fill-dark size-[1.5em]" viewBox="0 0 16 16">
@@ -62,6 +67,21 @@
                             </svg>
                         </button>
                     </form>
+
+                    <script th:inline="javascript">
+                        /*<![CDATA[*/
+                        document.getElementById("comment-delete-" + [[${comment.getId()}]]).addEventListener("click", (e) => {
+                            e.preventDefault();
+                            const deleteButton = document.getElementById("comment-delete-" + [[${comment.getId()}]]);
+                            const deleteForm = document.getElementById("comment-form-" + [[${comment.getId()}]]);
+
+                            if (confirm("Do you want to delete comment #" + [[${comment.getId()}]])) {
+                                deleteForm.action = deleteButton.formAction;
+                                deleteForm.submit();
+                            }
+                        });
+                        /*]]>*/
+                    </script>
                 </td>
             </tr>
             </tbody>

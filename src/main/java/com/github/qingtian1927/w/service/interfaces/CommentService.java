@@ -26,4 +26,6 @@ public interface CommentService {
     void unlike(User user, Comment comment);
     long count();
     Page<Comment> findAll(Pageable pageable);
+    void deleteById(Long id);
+    void deleteByPost(Post post);
 }

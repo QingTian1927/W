@@ -4,6 +4,7 @@ import com.github.qingtian1927.w.model.*;
 import com.github.qingtian1927.w.repository.CommentLikeRepository;
 import com.github.qingtian1927.w.repository.CommentRepository;
 import com.github.qingtian1927.w.service.interfaces.CommentService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -96,5 +97,20 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Page<Comment> findAll(Pageable pageable) {
         return this.commentRepository.findAll(pageable);
+    }
+
+    @Override
+    @Transactional
+    public void deleteById(Long id) {
+        Optional<Comment> comment = this.commentRepository.findById(id);
+        if (comment.isPresent()) {
+            this.commentRepository.deleteByReplyTo(comment.get());
+            this.commentRepository.deleteById(comment.get().getId());
+        }
+    }
+
+    @Override
+    public void deleteByPost(Post post) {
+        this.commentRepository.deleteByPost(post);
     }
 }

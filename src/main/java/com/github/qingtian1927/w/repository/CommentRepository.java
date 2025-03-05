@@ -15,4 +15,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findCommentByReplyToOrderByCreatedDateAsc(Comment replyTo);
     int countByPost(Post post);
     int countCommentByReplyTo(Comment comment);
+    void deleteByPost(Post post);
+    void deleteByReplyTo(Comment replyTo);
 }

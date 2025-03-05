@@ -18,12 +18,12 @@ public class CommentLike {
     @EmbeddedId
     private CommentLikeId id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @MapsId("userId")
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @MapsId("commentId")
     @JoinColumn(name = "comment_id")
     private Comment comment;

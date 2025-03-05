@@ -32,7 +32,7 @@ public class Comment {
     @Column(name = "content", nullable = false, length = 300, columnDefinition = "NVARCHAR(MAX)")
     private String content;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "reply_to_id")
     @ToString.Exclude
     private Comment replyTo;
