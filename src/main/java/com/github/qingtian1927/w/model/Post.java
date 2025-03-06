@@ -18,7 +18,7 @@ public class Post {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "content", length = 300, columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "content", length = 1024, columnDefinition = "NVARCHAR(MAX)")
     private String content;
 
     @ManyToOne

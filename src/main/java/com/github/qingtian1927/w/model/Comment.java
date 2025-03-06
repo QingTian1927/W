@@ -29,7 +29,7 @@ public class Comment {
     @ToString.Exclude
     private Post post;
 
-    @Column(name = "content", nullable = false, length = 300, columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "content", nullable = false, length = 1024, columnDefinition = "NVARCHAR(MAX)")
     private String content;
 
     @ManyToOne(cascade = CascadeType.ALL)
