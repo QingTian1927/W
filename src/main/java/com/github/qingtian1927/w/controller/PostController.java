@@ -2,11 +2,12 @@ package com.github.qingtian1927.w.controller;
 
 import com.github.qingtian1927.w.model.*;
 import com.github.qingtian1927.w.model.dto.CommentForm;
+import com.github.qingtian1927.w.model.dto.NotificationForm;
 import com.github.qingtian1927.w.model.dto.PostForm;
 import com.github.qingtian1927.w.service.interfaces.CommentService;
 import com.github.qingtian1927.w.service.interfaces.LikeService;
+import com.github.qingtian1927.w.service.interfaces.NotificationService;
 import com.github.qingtian1927.w.service.interfaces.PostService;
-import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.Size;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -24,12 +25,14 @@ public class PostController {
     private final PostService postService;
     private final LikeService likeService;
     private final CommentService commentService;
+    private final NotificationService notificationService;
 
     @Autowired
-    public PostController(PostService postService, LikeService likeService, CommentService commentService) {
+    public PostController(PostService postService, LikeService likeService, CommentService commentService, NotificationService notificationService) {
         this.postService = postService;
         this.likeService = likeService;
         this.commentService = commentService;
+        this.notificationService = notificationService;
     }
 
     @PostMapping("/post/create")
@@ -104,6 +107,14 @@ public class PostController {
         Like like = new Like(user, post.get());
         likeService.save(like);
 
+        Notification notification = NotificationService.buildNotification(
+                NotificationForm.builder().type(Notification.LIKE).build(),
+                post.get().getUser(),
+                Optional.of(user),
+                post
+        );
+        notificationService.save(notification);
+
         if (redirectPath == null || redirectPath.isEmpty()) {
             return "redirect:/";
         }
@@ -151,6 +162,14 @@ public class PostController {
         Post repost = new Post(post.get(), user);
         postService.save(repost);
 
+        Notification notification = NotificationService.buildNotification(
+                NotificationForm.builder().type(Notification.REPOST).build(),
+                post.get().getUser(),
+                Optional.of(user),
+                post
+        );
+        notificationService.save(notification);
+
         if (redirectPath == null || redirectPath.isEmpty()) {
             return "redirect:/users/" + user.getId();
         }
@@ -173,6 +192,14 @@ public class PostController {
 
         User user = ((CustomUserDetails) auth.getPrincipal()).getUser();
         Comment comment = new Comment(user, post.get(), params.getContent());
+
+        Notification notification = NotificationService.buildNotification(
+                NotificationForm.builder().type(Notification.COMMENT).build(),
+                post.get().getUser(),
+                Optional.of(user),
+                post
+        );
+        notificationService.save(notification);
 
         commentService.save(comment);
         return "redirect:/post/" + id;

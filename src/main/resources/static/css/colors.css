@@ -78,6 +78,18 @@
     background-color: var(--accent);
 }
 
+.bg-lightgreen {
+    background-color: var(--lightgreen);
+}
+
+.bg-purple {
+    background-color: var(--purple);
+}
+
+.bg-browngreen {
+    background-color: var(--browngreen);
+}
+
 .bg-purple-transparent {
     background-color: rgba(191, 59, 132, 0.2);
 }
@@ -316,6 +328,10 @@
 
 .border-dark {
     border-color: var(--darkgreen);
+}
+
+.border-accent {
+    border-color: var(--lightgreen);
 }
 
 .border-repost {

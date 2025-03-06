@@ -1,5 +1,8 @@
 package com.github.qingtian1927.w.controller;
 
+import com.github.qingtian1927.w.model.CustomUserDetails;
+import com.github.qingtian1927.w.model.User;
+import com.github.qingtian1927.w.service.interfaces.NotificationService;
 import com.github.qingtian1927.w.service.interfaces.PostService;
 import com.github.qingtian1927.w.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +17,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class MainController {
     private final PostService postService;
     private final UserService userService;
+    private final NotificationService notificationService;
 
     @Autowired
-    public MainController(PostService postService, UserService userService) {
+    public MainController(PostService postService, UserService userService, NotificationService notificationService) {
         this.postService = postService;
         this.userService = userService;
+        this.notificationService = notificationService;
     }
 
     @GetMapping(value = {"/", "/index"})
@@ -43,5 +48,18 @@ public class MainController {
             return "redirect:/";
         }
         return "signup";
+    }
+
+    @GetMapping(value = {"/notifications"})
+    public String notifications(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof AnonymousAuthenticationToken) {
+            return "redirect:/login";
+        }
+
+        User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
+        model.addAttribute("notifications", notificationService.findByUser(user));
+
+        return "notification";
     }
 }

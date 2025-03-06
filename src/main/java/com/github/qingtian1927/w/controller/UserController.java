@@ -167,6 +167,14 @@ public class UserController {
         }
 
         followService.save(followerUser, followedUser.get());
+        Notification notification = NotificationService.buildNotification(
+                NotificationForm.builder().type(Notification.FOLLOW).build(),
+                followedUser.get(),
+                Optional.of(followerUser),
+                Optional.empty()
+        );
+        notificationService.save(notification);
+
         return "redirect:/users/" + id;
     }
 
@@ -208,31 +216,7 @@ public class UserController {
         }
 
         User fromUser = ((CustomUserDetails) auth.getPrincipal()).getUser();
-        Notification notification = new Notification();
-        notification.setToUser(toUser.get());
-
-        switch (params.getType().toLowerCase()) {
-            case Notification.ADMIN -> {
-                notification.setType(params.getType());
-                notification.setFromUser(fromUser);
-                notification.setContent(params.getContent());
-            }
-            case Notification.COMMENT, Notification.LIKE, Notification.REPOST -> {
-                Optional<Post> referencedPost = postService.findById(params.getReferencedPostId());
-                if (referencedPost.isEmpty()) {
-                    model.addAttribute("error", "Referenced post not found");
-                    return "redirect:/error";
-                }
-
-                notification.setType(params.getType());
-                notification.setFromUser(fromUser);
-                notification.setReferencedPost(referencedPost.get());
-            }
-            default -> {
-                notification.setType(Notification.GENERAL);
-                notification.setContent(params.getContent());
-            }
-        }
+        Notification notification = NotificationService.buildNotification(params, toUser.get(), Optional.of(fromUser), Optional.empty());
 
         notificationService.save(notification);
         if (redirectPath == null || redirectPath.isEmpty()) {

@@ -1,0 +1,173 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>W - notification.html</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/search_input.css}">
+    <link rel="stylesheet" th:href="@{/css/colors.css}">
+</head>
+<body class="max-w-svw min-h-svh flex justify-end items-start bg-light-faded text-dark">
+<aside class="fixed z-10 bottom-0 left-0 md:top-0 h-[10%] md:h-full w-full md:w-[30%] xl:w-[20%] p-3 flex flex-col justify-center gap-12">
+    <th:block th:insert="~{fragments/sidebar}"></th:block>
+</aside>
+<main class="min-h-[90%] md:min-h-full w-full md:w-[70%] xl:w-[80%] p-3 pb-0 md:pb-3 flex flex-col justify-center items-center">
+    <div class="grow min-h-full size-full p-6 rounded-lg shadow-md md:shadow-lg bg-lighter text-dark">
+        <th:block th:insert="~{fragments/viewfeed_header}"></th:block>
+
+        <div th:if="${notifications != null}"
+             class="size-full mt-3 md:mt-0 flex flex-col justify-start items-center gap-6">
+            <article th:each="notification : ${notifications}"
+                     th:with="ADMIN = ${notification.ADMIN}, GENERAL = ${notification.GENERAL}, type = ${notification.getType()}"
+                     class="min-h-14 w-full p-3 md:p-6 flex flex-wrap gap-3 md:gap-6 rounded-lg border-2 border-light">
+                <div class="aspect-square min-h-14 flex justify-center items-center">
+                    <a th:if="${type != ADMIN && type != GENERAL}"
+                       th:with="fromProfile = ${@profileServiceImpl.findById(notification.getFromUser().getId())}, fromUser = ${notification.getFromUser()}"
+                       class="relative aspect-square h-full flex justify-center items-center rounded-full bg-dark"
+                    >
+                        <svg th:if="${fromProfile.isPresent() && fromProfile.get().getAvatar() == null}"
+                             xmlns="http://www.w3.org/2000/svg"
+                             class="bi bi-person-fill fill-lighter size-[1.5em]"
+                             viewBox="0 0 16 16">
+                            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                        </svg>
+
+                        <img th:if="${fromProfile.isPresent() && fromProfile.get().getAvatar() != null}"
+                             class=""
+                             th:src="@{/users/{id}/avatar(id = ${fromUser.getId()})}"
+                             th:alt="${fromUser.getDisplayName() + ' avatar image'}"/>
+
+                        <div class="absolute bottom-0 right-0 z-10 aspect-square w-[40%] flex justify-center items-center rounded-full"
+                             th:classappend="${(type == notification.LIKE) ? 'bg-purple' :
+                                               ((type == notification.REPOST) ? 'bg-lightgreen' :
+                                               ((type == notification.COMMENT) ? 'bg-browngreen' : 'bg-accent'))}"
+                        >
+                            <svg th:if="${type == notification.LIKE}" xmlns="http://www.w3.org/2000/svg"
+                                 class="bi bi-heart-fill fill-lighter size-[0.75em]" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd"
+                                      d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
+                            </svg>
+
+                            <svg th:if="${type == notification.REPOST}" xmlns="http://www.w3.org/2000/svg"
+                                 class="bi bi-share-fill fill-lighter size-[0.75em]" viewBox="0 0 16 16">
+                                <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5"/>
+                            </svg>
+
+                            <svg th:if="${type == notification.COMMENT}" xmlns="http://www.w3.org/2000/svg"
+                                 class="bi bi-chat-fill fill-lighter size-[0.75em]" viewBox="0 0 16 16">
+                                <path d="M8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6-.097 1.016-.417 2.13-.771 2.966-.079.186.074.394.273.362 2.256-.37 3.597-.938 4.18-1.234A9 9 0 0 0 8 15"/>
+                            </svg>
+
+                            <svg th:if="${type == notification.FOLLOW}" xmlns="http://www.w3.org/2000/svg"
+                                 class="bi bi-person-fill fill-lighter size-[0.75em]" viewBox="0 0 16 16">
+                                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                            </svg>
+                        </div>
+                    </a>
+
+                    <div th:if="${type == ADMIN || type == GENERAL}"
+                         th:classappend="${(type == ADMIN) ? 'bg-purple' : 'bg-dark'}"
+                         class="aspect-square h-full flex justify-center items-center gap-3 rounded-full">
+                        <svg th:if="${type == ADMIN}" xmlns="http://www.w3.org/2000/svg"
+                             class="bi bi-envelope-exclamation-fill fill-lighter size-[1.5em]" viewBox="0 0 16 16">
+                            <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414zM0 4.697v7.104l5.803-3.558zM6.761 8.83l-6.57 4.026A2 2 0 0 0 2 14h6.256A4.5 4.5 0 0 1 8 12.5a4.49 4.49 0 0 1 1.606-3.446l-.367-.225L8 9.586zM16 4.697v4.974A4.5 4.5 0 0 0 12.5 8a4.5 4.5 0 0 0-1.965.45l-.338-.207z"/>
+                            <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1.5a.5.5 0 0 1-1 0V11a.5.5 0 0 1 1 0m0 3a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/>
+                        </svg>
+
+                        <svg th:if="${type == GENERAL}" xmlns="http://www.w3.org/2000/svg"
+                             class="bi bi-bell fill-lighter size-[1.5em]" viewBox="0 0 16 16">
+                            <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="grow min-h-14 flex flex-col justify-center items-start">
+                    <p th:if="${type == GENERAL}">You received a notification</p>
+
+                    <p th:if="${type != GENERAL}">
+                            <span th:if="${type == ADMIN}">Admin
+                                <span class="font-medium text-darker"
+                                      th:text="${notification.getFromUser().getDisplayName()}"></span> sent you a message</span>
+
+                        <span th:if="${type == notification.FOLLOW}">
+                                <span class="font-medium text-darker"
+                                      th:text="${notification.getFromUser().getDisplayName()}"></span> followed you
+                            </span>
+
+                        <span th:if="${type == notification.LIKE || type == notification.COMMENT || type == notification.REPOST}"
+                              th:with="action = ${notification.getType() + ((type == notification.LIKE) ? 'd' : 'ed')}">
+                                <a th:href="@{/users/{id}(id = ${notification.getFromUser().getId()})}" class="font-medium text-darker"
+                                      th:text="${notification.getFromUser().getDisplayName()}"></a>
+                                <th:block th:text="${action}"></th:block>
+                                <th:block th:if="${type == notification.COMMENT}" th:text="on"></th:block>
+                                <a th:href="@{/post/{id}(id = ${notification.getReferencedPost().getId()})}" class="font-medium text-darker">your post</a>
+                            </span>
+                    </p>
+
+                    <p class="text-sm text-dark-faded">
+                        <time th:datetime="${notification.getCreatedDate()}"
+                              th:text="${notification.getCreatedDate().toLocaleString()}">
+                            2025-01-01
+                        </time>
+                    </p>
+                </div>
+
+                <div th:if="${type == ADMIN || type == GENERAL}"
+                     class="justify-self-end min-w-10 min-h-14 flex justify-center items-center">
+                    <button th:id="${'notification-button-' + notification.getId()}"
+                            class="aspect-square w-full p-1 flex justify-center items-center rounded-lg btn-pagination">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             class="bi bi-chevron-down size-[1.5em]" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                  d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
+                        </svg>
+
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             class="hidden bi bi-chevron-up size-[1.5em]" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                  d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708z"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div th:id="${'notification-content-' + notification.getId()}"
+                     th:if="${type == ADMIN || type == GENERAL}"
+                     th:data-isopen="false"
+                     class="hidden w-full p-3 gap-3 rounded-lg border-2 border-accent">
+                    <p th:utext="${notification.getContent()}"></p>
+                </div>
+
+                <script th:if="${type == ADMIN || type == GENERAL}" th:inline="javascript">
+                    /*<![CDATA[*/
+                    document.getElementById("notification-button-" + [[${notification.getId()}]]).addEventListener("click", () => {
+                        const notificationContent = document.getElementById("notification-content-" + [[${notification.getId()}]]);
+                        const notificationButton = document.getElementById("notification-button-" + [[${notification.getId()}]]);
+                        const chevronUp = notificationButton.querySelector(".bi-chevron-up");
+                        const chevronDown = notificationButton.querySelector(".bi-chevron-down");
+
+                        if (notificationContent.getAttribute("data-isopen") === "false") {
+                            notificationContent.classList.remove("hidden");
+                            notificationContent.classList.add("flex");
+                            notificationContent.setAttribute("data-isopen", "true");
+                            chevronUp.classList.remove("hidden");
+                            chevronDown.classList.add("hidden");
+                        } else {
+                            notificationContent.classList.remove("flex");
+                            notificationContent.classList.add("hidden");
+                            notificationContent.setAttribute("data-isopen", "false");
+                            chevronUp.classList.add("hidden");
+                            chevronDown.classList.remove("hidden");
+                        }
+                    });
+                    /*]]>*/
+                </script>
+            </article>
+        </div>
+    </div>
+
+    <!--/* mobile layout action menu spacer */-->
+    <div class="block md:hidden h-[10svh] w-full"></div>
+</main>
+</body>
+</html>
