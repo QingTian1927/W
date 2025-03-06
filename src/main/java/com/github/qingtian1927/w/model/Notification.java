@@ -1,5 +1,6 @@
 package com.github.qingtian1927.w.model;
 
+import com.github.qingtian1927.w.utils.ContentFormatter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,6 +19,7 @@ public class Notification {
     public static final String LIKE = "like";
     public static final String REPOST = "repost";
     public static final String COMMENT = "comment";
+    public static final String FOLLOW = "follow";
     public static final String GENERAL = "general";
 
     @Id
@@ -71,5 +73,9 @@ public class Notification {
 
     public void setType(String type) {
         this.type = type.toLowerCase();
+    }
+
+    public String getContent() {
+        return ContentFormatter.formatLineBreak(this.content);
     }
 }

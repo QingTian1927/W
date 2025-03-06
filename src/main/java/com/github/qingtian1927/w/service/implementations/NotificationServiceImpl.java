@@ -1,7 +1,9 @@
 package com.github.qingtian1927.w.service.implementations;
 
 import com.github.qingtian1927.w.model.Notification;
+import com.github.qingtian1927.w.model.Post;
 import com.github.qingtian1927.w.model.User;
+import com.github.qingtian1927.w.model.dto.NotificationForm;
 import com.github.qingtian1927.w.repository.NotificationRepository;
 import com.github.qingtian1927.w.service.interfaces.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<Notification> findByUser(User user) {
-        return notificationRepository.findByToUser(user);
+        return notificationRepository.findByToUserOrderByCreatedDateDesc(user);
     }
 
     @Override
