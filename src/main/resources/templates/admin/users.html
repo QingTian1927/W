@@ -46,7 +46,7 @@
                     <form th:id="${'user-form-' + user.getId()}" th:action="@{/users/{id}(id = ${user.getId()})}"
                           method="POST"
                           class="max-w-full mb-0 flex flex-wrap gap-3">
-                        <input type="hidden" name="redirect" th:value="@{/admin/posts/{page}(page = ${pageNumber})}">
+                        <input type="hidden" name="redirect" th:value="@{/admin/users/{page}(page = ${pageNumber})}">
                         <input type="hidden" name="type" value="admin">
                         <input type="hidden" th:id="${'notify-content-' + user.getId()}" name="content">
 
