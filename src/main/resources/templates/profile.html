@@ -9,16 +9,16 @@
     <link rel="stylesheet" th:href="@{/css/search_input.css}">
     <link rel="stylesheet" th:href="@{/css/colors.css}">
 </head>
-<body class="max-w-svw min-h-svh flex flex-col-reverse md:flex-row justify-center items-center bg-light-faded text-dark">
-<aside class="h-[10%] md:h-full w-full md:w-[30%] xl:w-[20%] p-3 flex flex-col justify-center gap-12">
+<body class="max-w-svw min-h-svh flex justify-end items-start bg-light-faded text-dark">
+<aside class="fixed z-10 bottom-0 left-0 md:top-0 h-[10%] md:h-full w-full md:w-[30%] xl:w-[20%] p-3 flex flex-col justify-center gap-12">
     <th:block th:insert="~{fragments/sidebar}"></th:block>
 </aside>
-<main class="h-[90%] md:h-full w-full md:w-[70%] xl:w-[80%] p-3 pb-0 md:pb-3 flex justify-center items-center">
-    <div class="relative size-full rounded-lg shadow-md md:shadow-lg bg-lighter text-dark">
+<main class="min-h-[90%] md:min-h-full w-full md:w-[70%] xl:w-[80%] p-3 pb-0 md:pb-3 flex flex-col justify-center items-center">
+    <div class="relative grow size-full p-6 rounded-lg shadow-md md:shadow-lg bg-lighter text-dark">
         <th:block th:insert="~{fragments/viewfeed_header}"></th:block>
 
         <div th:if="${user != null && profile != null}" class="w-full">
-            <div id="user-banner-frame" class="group relative w-full h-[40%]">
+            <div id="user-banner-frame" class="group relative w-full h-[22.5em]">
                 <img th:if="${profile.getBanner() != null}" th:id="user-banner-image"
                      class="size-full object-cover object-center rounded-none md:rounded-t-lg"
                      th:src="@{/users/{id}/banner(id = ${user.getId()})}"
@@ -38,7 +38,7 @@
             </div>
 
             <div id="user-avatar-frame"
-                 class="group absolute top-[20.5em] md:top-[18.75em] left-6 aspect-square h-40 flex justify-center items-center rounded-full bg-light border-4 border-lighter shadow-lg">
+                 class="group absolute top-[23em] md:top-[18.5em] md:top-[18.75em] left-12 aspect-square h-40 flex justify-center items-center rounded-full bg-light border-4 border-lighter shadow-lg">
                 <div class="relative size-full rounded-full flex justify-center items-center">
                     <img th:id="user-avatar-image" th:if="${profile.getAvatar() != null}"
                          class="size-full object-cover object-center rounded-full"
@@ -59,7 +59,7 @@
             </div>
 
             <div class="w-full p-6 flex flex-col justify-start items-center">
-                <div class="w-full mb-9 flex justify-end">
+                <div class="w-full mb-3 md:mb-9 flex justify-end">
                     <button id="edit-profile-button"
                             th:if="${#authentication.principal != 'anonymousUser' && #authentication.getPrincipal().getUsername() == user.getEmail()}"
                             class="w-[7.5em] p-3 rounded-full text-center font-semibold btn-accent">Edit Profile
@@ -71,16 +71,19 @@
                         <button type="submit">Follow</button>
                     </form>
 
-                    <th:block th:if="${#authentication.principal != 'anonymousUser' && #authentication.getPrincipal().getUsername() != user.getEmail()}">
+                    <th:block
+                            th:if="${#authentication.principal != 'anonymousUser' && #authentication.getPrincipal().getUsername() != user.getEmail()}">
                         <form th:action="@{/users/{id}/follow(id = ${user.getId()})}" method="POST"
                               th:if="${@followServiceImpl.findById(#authentication.getPrincipal().getUser(), user).isEmpty()}"
-                              class="w-[7.5em] p-3 rounded-full text-center font-semibold btn-accent">
+                              class="w-[7.5em] p-3 rounded-full text-center font-semibold btn-accent"
+                              th:classappend="${(user.getIsNotBanned() == true) ? '' : 'invisible'}">
                             <button type="submit">Follow</button>
                         </form>
 
                         <form th:action="@{/users/{id}/unfollow(id = ${user.getId()})}" method="POST"
                               th:if="${@followServiceImpl.findById(#authentication.getPrincipal().getUser(), user).isPresent()}"
-                              class="w-[7.5em] p-3 rounded-full text-center font-semibold btn-accent">
+                              class="w-[7.5em] p-3 rounded-full text-center font-semibold btn-accent"
+                              th:classappend="${(user.getIsNotBanned() == true) ? '' : 'invisible'}">
                             <button type="submit">Unfollow</button>
                         </form>
                     </th:block>
@@ -99,16 +102,28 @@
 
                     <div class="w-full flex gap-3">
                         <div>
-                            <span id="following-number" class="font-semibold" th:text="${@followServiceImpl.countByFollowerId(user.getId())}">0</span>
+                            <span id="following-number" class="font-semibold"
+                                  th:text="${@followServiceImpl.countByFollowerId(user.getId())}">0</span>
                             <span class="text-dark-faded">Following</span>
                         </div>
 
                         <div>
-                            <span id="follower-number" class="font-semibold" th:text="${@followServiceImpl.countByFollowedId(user.getId())}">0</span>
+                            <span id="follower-number" class="font-semibold"
+                                  th:text="${@followServiceImpl.countByFollowedId(user.getId())}">0</span>
                             <span class="text-dark-faded">Followers</span>
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div th:if="${user.getIsNotBanned() == false}"
+                 class="w-full min-h-64 flex flex-col justify-center items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="bi bi-slash-circle fill-dark size-[5em]" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                    <path d="M11.354 4.646a.5.5 0 0 0-.708 0l-6 6a.5.5 0 0 0 .708.708l6-6a.5.5 0 0 0 0-.708"/>
+                </svg>
+                <span class="text-lg text-dark">This account has been locked</span>
             </div>
         </div>
 
@@ -121,6 +136,9 @@
             <span class="font-medium text-xl text-dark">This content does not exist</span>
         </div>
     </div>
+
+    <!--/* mobile layout action menu spacer */-->
+    <div class="block md:hidden h-[10svh] w-full"></div>
 </main>
 
 <div id="user-banner-overlay" class="hidden z-1 fixed size-full">
@@ -154,7 +172,7 @@
     </div>
 </div>
 
-<div id="user-avatar-overlay" class="hidden z-1 fixed size-full">
+<div id="user-avatar-overlay" class="hidden z-20 fixed size-full">
     <div class="relative size-full flex justify-center items-center bg-black-transparent">
         <div class="absolute top-3 right-3 flex gap-3">
             <form th:if="${#authentication.principal != 'anonymousUser' && #authentication.getPrincipal().getUsername() == user.getEmail()}"
@@ -187,7 +205,7 @@
 </div>
 
 <div th:if="${#authentication.principal != 'anonymousUser' && #authentication.getPrincipal().getUsername() == user.getEmail()}"
-     id="image-preview-overlay" class="hidden fixed z-1 size-full">
+     id="image-preview-overlay" class="hidden fixed z-20 size-full">
     <div class="relative size-full flex justify-center items-center flex flex-col justify-center items-center gap-6 bg-black-transparent">
         <img id="image-preview" src="" th:alt="${user.getDisplayName() + ' banner image'}"
              class="aspect-auto max-w-[90%] max-h-[90%] object-cover object-center">

@@ -134,6 +134,14 @@
     color: var(--lighterwhite);
 }
 
+.fill-darker-faded-white {
+    filter: invert(91%) sepia(8%) saturate(616%) hue-rotate(181deg) brightness(99%) contrast(98%);
+}
+
+.fill-darker-faded-white path {
+    color: var(--darkerfadedwhite);
+}
+
 .fill-purple {
     filter: invert(29%) sepia(79%) saturate(1361%) hue-rotate(294deg) brightness(90%) contrast(86%);
 }

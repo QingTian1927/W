@@ -224,4 +224,64 @@ public class UserController {
         }
         return "redirect:" + redirectPath;
     }
+
+    @PostMapping("/users/{id}/lock")
+    public String lockUser(@PathVariable Long id, @RequestParam("redirect") String redirectPath, Model model) {
+        Optional<User> user = userService.findById(id);
+        if (user.isEmpty()) {
+            model.addAttribute("error", "User not found");
+            return "redirect:/error";
+        }
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth instanceof AnonymousAuthenticationToken) {
+            return "redirect:/login";
+        }
+
+        if (
+                auth.getAuthorities().stream()
+                        .anyMatch(r -> r.getAuthority().equals("ADMIN"))
+        ) {
+            user.get().setIsNotBanned(Boolean.FALSE);
+            userService.save(user.get());
+
+            if (redirectPath == null || redirectPath.isEmpty()) {
+                return "redirect:/";
+            }
+            return "redirect:" + redirectPath;
+        }
+
+        model.addAttribute("error", "Request forbidden");
+        return "redirect:/error";
+    }
+
+    @PostMapping("/users/{id}/unlock")
+    public String unlockUser(@PathVariable Long id, @RequestParam("redirect") String redirectPath, Model model) {
+        Optional<User> user = userService.findById(id);
+        if (user.isEmpty()) {
+            model.addAttribute("error", "User not found");
+            return "redirect:/error";
+        }
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth instanceof AnonymousAuthenticationToken) {
+            return "redirect:/login";
+        }
+
+        if (
+                auth.getAuthorities().stream()
+                        .anyMatch(r -> r.getAuthority().equals("ADMIN"))
+        ) {
+            user.get().setIsNotBanned(Boolean.TRUE);
+            userService.save(user.get());
+
+            if (redirectPath == null || redirectPath.isEmpty()) {
+                return "redirect:/";
+            }
+            return "redirect:" + redirectPath;
+        }
+
+        model.addAttribute("error", "Request forbidden");
+        return "redirect:/error";
+    }
 }
