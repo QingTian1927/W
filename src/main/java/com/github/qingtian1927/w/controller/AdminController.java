@@ -2,6 +2,7 @@ package com.github.qingtian1927.w.controller;
 
 import com.github.qingtian1927.w.service.interfaces.CommentService;
 import com.github.qingtian1927.w.service.interfaces.PostService;
+import com.github.qingtian1927.w.service.interfaces.StatisticsService;
 import com.github.qingtian1927.w.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -21,12 +22,30 @@ public class AdminController {
     private final PostService postService;
     private final UserService userService;
     private final CommentService commentService;
+    private final StatisticsService statisticsService;
 
     @Autowired
-    public AdminController(PostService postService, UserService userService, CommentService commentService) {
+    public AdminController(PostService postService, UserService userService, CommentService commentService, StatisticsService statisticsService) {
         this.postService = postService;
         this.userService = userService;
         this.commentService = commentService;
+        this.statisticsService = statisticsService;
+    }
+
+    @GetMapping(value = {"/admin/stats"})
+    public String statistics(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (
+                authentication.getAuthorities().stream()
+                        .anyMatch(r -> r.getAuthority().equals("ADMIN"))
+        ) {
+            model.addAttribute("ageGroups", statisticsService.countUserByAgeGroup());
+            model.addAttribute("userGrowthCounts", statisticsService.countNewUser());
+            model.addAttribute("postCount", statisticsService.countNewPost());
+            model.addAttribute("activeUserNumber", statisticsService.countActiveUsers());
+            return "/admin/stats";
+        }
+        return "redirect:/login";
     }
 
     @GetMapping(value = {"/admin/dashboard"})

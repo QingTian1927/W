@@ -34,8 +34,16 @@
     color: var(--purple);
 }
 
+.text-warning-lighter {
+    color: #DD92BB;
+}
+
 .text-success {
     color: var(--fadeddarkgreen);
+}
+
+.text-lightgreen {
+    color: var(--lightgreen);
 }
 
 .bg-dark {
