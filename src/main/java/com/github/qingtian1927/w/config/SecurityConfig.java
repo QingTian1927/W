@@ -53,6 +53,9 @@ public class SecurityConfig {
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout=true")
                 .permitAll()
+        ).rememberMe(remember -> remember
+                .rememberMeParameter("remember-me")
+                .tokenValiditySeconds(86400)
         );
 
         return http.build();

@@ -357,3 +357,7 @@
 .border-repost:hover {
     border-color: var(--lightgreen);
 }
+
+.accent-color {
+    accent-color: var(--lightgreen);
+}
