@@ -1,9 +1,6 @@
 package com.github.qingtian1927.w.service.implementations;
 
-import com.github.qingtian1927.w.model.dto.ActiveUserCount;
-import com.github.qingtian1927.w.model.dto.AgeGroupCount;
-import com.github.qingtian1927.w.model.dto.PostCount;
-import com.github.qingtian1927.w.model.dto.UserGrowthCount;
+import com.github.qingtian1927.w.model.dto.*;
 import com.github.qingtian1927.w.repository.StatisticsRepository;
 import com.github.qingtian1927.w.service.interfaces.StatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,12 +28,27 @@ public class StatisticsServiceImpl implements StatisticsService {
     }
 
     @Override
-    public PostCount countNewPost() {
+    public PostCount countNewPosts() {
         return statisticsRepository.countNewPosts();
+    }
+
+    @Override
+    public CommentCount countNewComments() {
+        return statisticsRepository.countNewComments();
     }
 
     @Override
     public ActiveUserCount countActiveUsers() {
         return statisticsRepository.countActiveUsers();
+    }
+
+    @Override
+    public List<UserActivityCount> countUserActivities() {
+        return statisticsRepository.countUserActivities();
+    }
+
+    @Override
+    public int countBannedUsers() {
+        return statisticsRepository.countBannedUsers();
     }
 }

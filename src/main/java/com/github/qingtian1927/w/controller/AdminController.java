@@ -41,8 +41,11 @@ public class AdminController {
         ) {
             model.addAttribute("ageGroups", statisticsService.countUserByAgeGroup());
             model.addAttribute("userGrowthCounts", statisticsService.countNewUser());
-            model.addAttribute("postCount", statisticsService.countNewPost());
+            model.addAttribute("postCount", statisticsService.countNewPosts());
             model.addAttribute("activeUserNumber", statisticsService.countActiveUsers());
+            model.addAttribute("commentPost", statisticsService.countNewComments());
+            model.addAttribute("bannedUserNumber", statisticsService.countBannedUsers());
+            model.addAttribute("userActivityCounts", statisticsService.countUserActivities());
             return "/admin/stats";
         }
         return "redirect:/login";

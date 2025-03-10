@@ -1,9 +1,6 @@
 package com.github.qingtian1927.w.repository;
 
-import com.github.qingtian1927.w.model.dto.ActiveUserCount;
-import com.github.qingtian1927.w.model.dto.AgeGroupCount;
-import com.github.qingtian1927.w.model.dto.PostCount;
-import com.github.qingtian1927.w.model.dto.UserGrowthCount;
+import com.github.qingtian1927.w.model.dto.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -75,45 +72,6 @@ public class StatisticsRepository {
         return userGrowthCountList;
     }
 
-    public int countPostToday() {
-        String sql = """
-                    SELECT COUNT(id) AS count
-                    FROM posts
-                    WHERE DATEDIFF(day, created_at, CURRENT_TIMESTAMP) < 1
-                """;
-
-        Query query = entityManager.createNativeQuery(sql);
-        Object result = (Object) query.getSingleResult();
-
-        return ((Number) result).intValue();
-    }
-
-    public int countPostThisWeek() {
-        String sql = """
-                    SELECT COUNT(id) AS count
-                    FROM posts
-                    WHERE DATEDIFF(week, created_at, CURRENT_TIMESTAMP) < 1
-                """;
-
-        Query query = entityManager.createNativeQuery(sql);
-        Object result = (Object) query.getSingleResult();
-
-        return ((Number) result).intValue();
-    }
-
-    public int countPostThisMonth() {
-        String sql = """
-                    SELECT COUNT(id) AS count
-                    FROM posts
-                    WHERE DATEDIFF(month, created_at, CURRENT_TIMESTAMP) < 1
-                """;
-
-        Query query = entityManager.createNativeQuery(sql);
-        Object result = (Object) query.getSingleResult();
-
-        return ((Number) result).intValue();
-    }
-
     public PostCount countNewPosts() {
         String todaySQL = """
                     SELECT COUNT(id) AS count
@@ -161,6 +119,62 @@ public class StatisticsRepository {
         Query lastMonthQuery = entityManager.createNativeQuery(lastMonthSQL);
 
         return new PostCount(
+                ((Number) todayQuery.getSingleResult()).intValue(),
+                ((Number) thisWeekQuery.getSingleResult()).intValue(),
+                ((Number) thisMonthQuery.getSingleResult()).intValue(),
+                ((Number) yesterdayQuery.getSingleResult()).intValue(),
+                ((Number) lastWeekQuery.getSingleResult()).intValue(),
+                ((Number) lastMonthQuery.getSingleResult()).intValue()
+        );
+    }
+
+    public CommentCount countNewComments() {
+        String todaySQL = """
+                    SELECT COUNT(id) AS count
+                    FROM comments
+                    WHERE CAST(created_at AS DATE) = CAST(CURRENT_TIMESTAMP AS DATE)
+                """;
+        String thisWeekSQL = """
+                    SELECT COUNT(id) AS count
+                    FROM comments
+                    WHERE DATEPART(week, created_at) = DATEPART(week, CURRENT_TIMESTAMP)
+                    AND DATEPART(year, created_at) = DATEPART(year, CURRENT_TIMESTAMP)
+                """;
+        String thisMonthSQL = """
+                    SELECT COUNT(id) AS count
+                    FROM comments
+                    WHERE DATEPART(month, created_at) = DATEPART(month, CURRENT_TIMESTAMP)
+                    AND DATEPART(year, created_at) = DATEPART(year, CURRENT_TIMESTAMP)
+                """;
+
+        String yesterdaySQL = """
+                    SELECT COUNT(id) AS count
+                    FROM comments
+                    WHERE DATEDIFF(day, created_at, CURRENT_TIMESTAMP) = 1
+                """;
+        String lastWeekSQL = """
+                    SELECT COUNT(id) AS count
+                    FROM comments
+                    WHERE DATEPART(week, created_at) = DATEPART(week, DATEADD(week, -1, CURRENT_TIMESTAMP))
+                    AND DATEPART(year, created_at) = DATEPART(year, DATEADD(week, -1, CURRENT_TIMESTAMP))
+                """;
+
+        String lastMonthSQL = """
+                    SELECT COUNT(id) AS count
+                    FROM comments
+                    WHERE DATEPART(month, created_at) = DATEPART(month, DATEADD(month, -1, CURRENT_TIMESTAMP))
+                    AND DATEPART(year, created_at) = DATEPART(year, DATEADD(month, -1, CURRENT_TIMESTAMP))
+                """;
+
+        Query todayQuery = entityManager.createNativeQuery(todaySQL);
+        Query thisWeekQuery = entityManager.createNativeQuery(thisWeekSQL);
+        Query thisMonthQuery = entityManager.createNativeQuery(thisMonthSQL);
+
+        Query yesterdayQuery = entityManager.createNativeQuery(yesterdaySQL);
+        Query lastWeekQuery = entityManager.createNativeQuery(lastWeekSQL);
+        Query lastMonthQuery = entityManager.createNativeQuery(lastMonthSQL);
+
+        return new CommentCount(
                 ((Number) todayQuery.getSingleResult()).intValue(),
                 ((Number) thisWeekQuery.getSingleResult()).intValue(),
                 ((Number) thisMonthQuery.getSingleResult()).intValue(),
@@ -220,5 +234,76 @@ public class StatisticsRepository {
                 ((Number) currentWeekQuery.getSingleResult()).intValue(),
                 ((Number) pastWeekQuery.getSingleResult()).intValue()
         );
+    }
+
+    public int countBannedUsers() {
+        String sql = """
+                    SELECT COUNT(id) AS count
+                    FROM users
+                    WHERE is_not_banned = 'false' AND role = 'USER';
+                """;
+
+        Query query = entityManager.createNativeQuery(sql);
+        return ((Number) query.getSingleResult()).intValue();
+    }
+
+    public List<UserActivityCount> countUserActivities() {
+        String sql = """
+                    WITH PostCount AS (
+                        SELECT
+                            CAST(p.created_at AS DATE) AS date,
+                            COUNT(user_id) AS count FROM posts p
+                        JOIN users u ON p.user_id = u.id
+                        WHERE u.role = 'USER'
+                        GROUP BY CAST(p.created_at AS DATE)
+                    ),
+                    CommentCount AS (
+                        SELECT
+                            CAST(c.created_at AS DATE) AS date,
+                            COUNT(user_id) AS count FROM comments c
+                        JOIN users u ON c.user_id = u.id
+                        WHERE u.role = 'USER'
+                        GROUP BY CAST(c.created_at AS DATE)
+                    ),
+                    LikeCount AS (
+                        SELECT
+                            CAST(l.created_at AS DATE) AS date,
+                            COUNT(user_id) AS count FROM likes l
+                            JOIN users u ON l.user_id = u.id
+                        WHERE u.role = 'USER'
+                        GROUP BY CAST(l.created_at AS DATE)
+                    ),
+                    FollowCount AS (
+                        SELECT
+                            CAST(f.created_at AS DATE) AS date,
+                            COUNT(follower_id) AS count FROM follows f
+                            JOIN users u ON f.follower_id = u.id
+                        WHERE u.role = 'USER'
+                        GROUP BY CAST(f.created_at AS DATE)
+                    )
+                    SELECT
+                        date, SUM(count) AS count
+                    FROM (
+                        SELECT date, count FROM PostCount
+                        UNION SELECT date, count FROM CommentCount
+                        UNION SELECT date, count FROM LikeCount
+                        UNION SELECT date, count FROM FollowCount
+                    ) AS activity_count
+                    GROUP BY date
+                    ORDER BY date;
+                """;
+
+        Query query = entityManager.createNativeQuery(sql);
+        List<Object[]> results = query.getResultList();
+        List<UserActivityCount> userActivities = new ArrayList<>();
+
+        for (Object[] result : results) {
+            userActivities.add(new UserActivityCount(
+                    (Date) result[0],
+                    ((Number) result[1]).intValue()
+            ));
+        }
+
+        return userActivities;
     }
 }

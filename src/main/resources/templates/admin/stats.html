@@ -69,10 +69,60 @@
             <div class="size-full p-3 flex flex-col justify-center items-center gap-3 rounded-lg text-white bg-accent">
                 <div th:with="difference = ${activeUserNumber.getThisWeek() - activeUserNumber.getLastWeek()}">
                     <span th:text="${activeUserNumber.getThisWeek()}" class="font-semibold text-4xl"></span>
-                    <span class="font-medium text-sm xl:text-base" th:text="${(difference < 0) ? difference : '+' + difference}"
+                    <span class="font-medium text-sm xl:text-base"
+                          th:text="${(difference < 0) ? difference : '+' + difference}"
                           th:classappend="${(difference <= 0) ? 'text-warning-lighter' : 'text-lightgreen'}">+69</span>
                 </div>
                 <span>Weekly Active Users</span>
+            </div>
+
+            <div class="col-span-1 md:col-span-2 grid grid-cols-3 gap-6">
+                <div class="aspect-auto md:aspect-square size-full p-3 flex flex-col gap-3 justify-center items-center rounded-lg bg-light-faded">
+                    <div th:with="difference = ${commentPost.getToday() - commentPost.getYesterday()}"
+                         class="break-words">
+                        <span th:text="${commentPost.getToday()}"
+                              class="font-semibold text-xl lg:text-3xl xl:text-4xl"></span>
+                        <span th:text="${(difference < 0) ? difference : '+' + difference}"
+                              class="font-medium text-sm xl:text-base"
+                              th:classappend="${(difference <= 0) ? 'text-warning-lighter' : 'text-success'}">+65</span>
+                    </div>
+                    <span>Posts Today</span>
+                </div>
+
+                <div class="aspect-auto md:aspect-square size-full p-3 flex flex-col gap-3 justify-center items-center rounded-lg bg-light-faded">
+                    <div th:with="difference = ${commentPost.getThisWeek() - commentPost.getLastWeek()}"
+                         class="break-words">
+                        <span th:text="${commentPost.getThisWeek()}"
+                              class="font-semibold text-xl lg:text-3xl xl:text-4xl"></span>
+                        <span th:text="${(difference < 0) ? difference : '+' + difference}"
+                              class="font-medium text-sm xl:text-base"
+                              th:classappend="${(difference <= 0) ? 'text-warning-lighter' : 'text-success'}">+65</span>
+                    </div>
+                    <span>Posts This Week</span>
+                </div>
+
+                <div class="aspect-auto md:aspect-square size-full p-3 flex flex-col gap-3 justify-center items-center rounded-lg bg-light-faded">
+                    <div th:with="difference = ${commentPost.getThisMonth() - commentPost.getLastMonth()}"
+                         class="break-words">
+                        <span th:text="${commentPost.getThisMonth()}"
+                              class="font-semibold text-xl lg:text-3xl xl:text-4xl"></span>
+                        <span th:text="${(difference < 0) ? difference : '+' + difference}"
+                              class="font-medium text-sm xl:text-base"
+                              th:classappend="${(difference <= 0) ? 'text-warning-lighter' : 'text-success'}">+65</span>
+                    </div>
+                    <span>Posts This Month</span>
+                </div>
+            </div>
+
+            <div class="size-full p-3 flex flex-col justify-center items-center gap-3 rounded-lg text-white bg-purple">
+                <span class="font-semibold text-4xl" th:text="${bannedUserNumber}"></span>
+                <span>Banned Users</span>
+            </div>
+        </div>
+
+        <div class="w-full min-h-[25em] grid">
+            <div class="relative size-full p-3 rounded-lg bg-light-faded">
+                <canvas id="user-activity-chart"></canvas>
             </div>
         </div>
     </div>
@@ -83,10 +133,6 @@
     <script th:inline="javascript">
         /*<![CDATA[*/
         const ageGroups = [[${ageGroups}]];
-        const userGrowthCounts = [[${userGrowthCounts}]];
-
-        console.log(userGrowthCounts);
-
         new Chart(
             document.getElementById("age-group-chart"),
             {
@@ -125,6 +171,7 @@
             }
         );
 
+        const userGrowthCounts = [[${userGrowthCounts}]];
         new Chart(
             document.getElementById("user-growth-chart"),
             {
@@ -135,7 +182,6 @@
                         {
                             label: "New Users",
                             data: userGrowthCounts.map(row => row.count)
-
                         }
                     ]
                 },
@@ -145,6 +191,45 @@
                         title: {
                             display: true,
                             text: 'User Growth by Day',
+                            color: "#2a5045",
+                            position: "bottom",
+                            padding: {
+                                top: 12
+                            }
+                        },
+                        legend: {
+                            labels: {
+                                padding: 12
+                            },
+                            title: {
+                                padding: 12
+                            }
+                        }
+                    }
+                }
+            }
+        );
+
+        const userActivityCounts = [[${userActivityCounts}]];
+        new Chart(
+            document.getElementById("user-activity-chart"),
+            {
+                type: "line",
+                data: {
+                    labels: userActivityCounts.map(row => row.date),
+                    datasets: [
+                        {
+                            label: "User Activities",
+                            data: userActivityCounts.map(row => row.count)
+                        }
+                    ]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'User Activities by Day',
                             color: "#2a5045",
                             position: "bottom",
                             padding: {
