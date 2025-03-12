@@ -20,12 +20,12 @@
         <div th:if="${user != null && profile != null}" class="w-full">
             <div id="user-banner-frame" class="group relative w-full h-[22.5em]">
                 <img th:if="${profile.getBanner() != null}" th:id="user-banner-image"
-                     class="size-full object-cover object-center rounded-none md:rounded-t-lg"
+                     class="size-full object-cover object-center rounded-t-lg"
                      th:src="@{/users/{id}/banner(id = ${user.getId()})}"
                      th:alt="${user.getDisplayName() + ' banner image'}"/>
 
                 <div th:unless="${profile.getBanner() != null}" th:id="user-banner-image"
-                     class="size-full rounded-none md:rounded-t-lg bg-darker"></div>
+                     class="size-full rounded-t-lg bg-darker"></div>
 
                 <div class="absolute top-0 hidden group-hover:flex size-full justify-end items-start rounded-none md:rounded-t-lg bg-lighter-darker-transparent">
                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -38,7 +38,7 @@
             </div>
 
             <div id="user-avatar-frame"
-                 class="group absolute top-[23em] md:top-[18.5em] md:top-[18.75em] left-12 aspect-square h-40 flex justify-center items-center rounded-full bg-light border-4 border-lighter shadow-lg">
+                 class="group absolute top-[23em] md:top-[18.75em] left-12 aspect-square h-40 flex justify-center items-center rounded-full bg-light border-4 border-lighter shadow-lg">
                 <div class="relative size-full rounded-full flex justify-center items-center">
                     <img th:id="user-avatar-image" th:if="${profile.getAvatar() != null}"
                          class="size-full object-cover object-center rounded-full"
