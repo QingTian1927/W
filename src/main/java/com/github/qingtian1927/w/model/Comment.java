@@ -9,13 +9,12 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table(name = "comments")
 @Data
 @NoArgsConstructor
-public class Comment {
+public class Comment implements Searchable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -58,7 +57,22 @@ public class Comment {
         this.replyTo = replyTo;
     }
 
+    public Comment(Long id, String content, Date createdDate, Date updatedDate, Post post, Comment replyTo, User user) {
+        this.id = id;
+        this.content = content;
+        this.createdDate = createdDate;
+        this.updatedDate = updatedDate;
+        this.post = post;
+        this.replyTo = replyTo;
+        this.user = user;
+    }
+
     public String getContent() {
         return ContentFormatter.formatLineBreak(this.content);
+    }
+
+    @Override
+    public String getType() {
+        return Searchable.TYPE_COMMENT;
     }
 }

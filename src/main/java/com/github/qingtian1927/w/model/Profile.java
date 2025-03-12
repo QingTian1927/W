@@ -13,7 +13,7 @@ import java.io.IOException;
 @Table(name = "profiles")
 @Data
 @NoArgsConstructor
-public class Profile {
+public class Profile implements Searchable {
     @Id
     @Column(name = "user_id")
     private Long id;
@@ -58,5 +58,20 @@ public class Profile {
 
     public String getBio() {
         return ContentFormatter.formatLineBreak(this.bio);
+    }
+
+    @Override
+    public String getType() {
+        return Searchable.TYPE_PROFILE;
+    }
+
+    @Override
+    public String getContent() {
+        return this.bio;
+    }
+
+    @Override
+    public void setContent(String content) {
+        this.bio = content;
     }
 }

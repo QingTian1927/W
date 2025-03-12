@@ -12,7 +12,7 @@ import java.util.Date;
 @Table(name = "posts")
 @Data
 @NoArgsConstructor
-public class Post {
+public class Post implements Searchable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -43,6 +43,14 @@ public class Post {
         this.user = user;
     }
 
+    public Post(Long id, String content, Date createdDate, Post repost, User user) {
+        this.id = id;
+        this.content = content;
+        this.createdDate = createdDate;
+        this.repost = repost;
+        this.user = user;
+    }
+
     public String getContent() {
         if (repost == null) {
             return ContentFormatter.formatLineBreak(this.content);
@@ -57,5 +65,10 @@ public class Post {
         }
 
         return ContentFormatter.formatLineBreak(content);
+    }
+
+    @Override
+    public String getType() {
+        return Searchable.TYPE_POST;
     }
 }
