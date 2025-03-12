@@ -6,9 +6,9 @@
            class="h-12 aspect-square flex justify-center items-center rounded-lg shadow-sm bg-darker text-white text-2xl font-light">W</a>
     </div>
 
-    <form id="search-form" th:action="@{/api/search}"
+    <form id="search-form" th:action="@{/search}"
           class="group w-full h-max m-0 hidden md:flex rounded-full shadow-sm border border-dark">
-        <input type="text" id="search-input" name="search-input" placeholder="Search" aria-label="Search W" required
+        <input type="text" id="search-input" name="query" placeholder="Search" aria-label="Search W" required
                class="search-input grow max-w-full pl-6 pr-3 py-3 rounded-l-full rounded-r-full lg:rounded-r-none bg-lighter text-dark-faded">
         <button type="submit"
                 class="h-full pr-6 py-3 hidden lg:flex justify-center items-center self-stretch rounded-r-full bg-lighter">
