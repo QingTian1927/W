@@ -65,4 +65,10 @@ public class MainController {
 
         return "notification";
     }
+
+    @GetMapping(value = {"/forgot-password"})
+    public String forgotPassword(Model model) {
+        model.addAttribute("captcha", new Captcha());
+        return "forgot_password";
+    }
 }

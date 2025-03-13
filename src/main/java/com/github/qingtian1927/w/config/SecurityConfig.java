@@ -40,7 +40,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CaptchaAuthenticationFilter captchaAuthenticationFilter(AuthenticationManager authenticationManager) throws Exception {
+    public CaptchaAuthenticationFilter captchaAuthenticationFilter(AuthenticationManager authenticationManager) {
         CaptchaAuthenticationFilter filter = new CaptchaAuthenticationFilter();
         filter.setAuthenticationManager(authenticationManager);
         filter.setFilterProcessesUrl("/users/auth");
@@ -50,7 +50,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain SecurityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/actuator/**", "/signup", "/login", "/css/**", "/users/**", "/post/**", "/comment/**", "/search/**").permitAll()
+                .requestMatchers(
+                        "/", "/actuator/**", "/signup", "/login", "/css/**", "/users/**", "/post/**",
+                        "/comment/**", "/search/**", "/forgot-password", "/reset-password/**"
+                ).permitAll()
                 .requestMatchers("/admin/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
         ).formLogin(login -> login
