@@ -12,7 +12,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Captcha {
     public static final String OP_ADD = "+";
     public static final String OP_SUB = "-";
-    public static final String OP_MUL = "*";
+    public static final String OP_MUL = "×";
     public static final int OP_TOTAL = 3;
 
     public static final String DATA_SEPARATOR = ",";
