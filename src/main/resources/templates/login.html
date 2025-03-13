@@ -11,13 +11,13 @@
     <a href="/" class="text-[35svh] font-bold text-white opacity-30 hover:opacity-100">W</a>
 </div>
 
-<div class="h-full w-full md:w-[40%] p-5 flex flex-col justify-center items-center gap-10">
+<div class="h-full w-full md:w-[40%] p-5 flex flex-col justify-center items-center gap-12">
     <header class="w-[90%] flex flex-col justify-center items-start gap-2">
         <h1 class="text-[1.75em] font-medium">Thoughts around the world</h1>
         <h2 class="font-medium text-dark-faded">Sign in to your W account</h2>
     </header>
 
-    <form class="w-[90%] flex flex-col justify-center items-center gap-5" th:action="@{/users/auth}" method="POST">
+    <form class="w-[90%] flex flex-col justify-center items-center gap-6" th:action="@{/users/auth}" method="POST">
         <label for="email" class="w-full flex flex-col items-center gap-1.5">
             <span class="self-start font-medium text-lg">Email</span>
             <input type="email" name="email" id="email" required autocomplete="email"
@@ -38,12 +38,25 @@
             <span class="text-darker">Remember me</span>
         </label>
 
-        <button type="submit" class="w-full mt-8 p-2 rounded-full font-medium btn-accent">Login
+        <div th:if="${captcha != null}" class="w-full flex flex-wrap justify-center items-center gap-3">
+            <h3 class="w-full mb-3 text-center text-lg">Please verify you are a human</h3>
+
+            <input type="hidden" id="captcha-string" name="captcha-string" th:value="${captcha.toDataString()}">
+            <span th:text="${captcha.getOperand1() + ' ' + captcha.getOperation() + ' ' + captcha.getOperand2()}"
+                  class="px-6 py-3 font-medium text-3xl rounded-lg select-none text-darker bg-lightgreen"></span>
+            <label for="captcha-answer" class="font-medium text-3xl select-none text-darker">=</label>
+            <input type="number" id="captcha-answer" name="captcha-answer"
+                   th:min="${captcha.LOWER_BOUND - captcha.UPPER_BOUND}"
+                   th:max="${captcha.UPPER_BOUND * captcha.UPPER_BOUND}" required
+                   class="px-6 py-3 font-medium text-3xl rounded-lg text-darker bg-lightgreen">
+        </div>
+
+        <button type="submit" class="w-full mt-6 p-2 rounded-full font-medium btn-accent">Login
         </button>
     </form>
 
     <p th:if="${param.error != null && param.error.contains('true')}" class="text-lg font-semibold text-warning">Login
-        failed. Please check your credentials</p>
+        failed. Please check your credentials or CAPTCHA.</p>
     <p th:if="${param.logout != null && param.logout.contains('true')}" class="text-lg font-semibold text-success">
         Logout success</p>
 </div>

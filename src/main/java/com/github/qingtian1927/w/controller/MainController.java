@@ -1,5 +1,6 @@
 package com.github.qingtian1927.w.controller;
 
+import com.github.qingtian1927.w.model.Captcha;
 import com.github.qingtian1927.w.model.CustomUserDetails;
 import com.github.qingtian1927.w.model.User;
 import com.github.qingtian1927.w.service.interfaces.NotificationService;
@@ -38,6 +39,8 @@ public class MainController {
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             return "redirect:/";
         }
+
+        model.addAttribute("captcha", new Captcha());
         return "login";
     }
 
