@@ -4,6 +4,7 @@ import com.github.qingtian1927.w.model.Comment;
 import com.github.qingtian1927.w.model.Post;
 import com.github.qingtian1927.w.model.Profile;
 import com.github.qingtian1927.w.model.Searchable;
+import com.github.qingtian1927.w.model.dto.SearchQuery;
 import com.github.qingtian1927.w.repository.SearchRepository;
 import com.github.qingtian1927.w.service.interfaces.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,22 +30,22 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public List<Post> searchPosts(String text) {
-        return searchRepository.searchPosts(text);
+    public List<Post> searchPosts(SearchQuery query) {
+        return highlightSearch(searchRepository.searchPosts(query), query.getQuery());
     }
 
     @Override
-    public List<Comment> searchComments(String text) {
-        return searchRepository.searchComments(text);
+    public List<Comment> searchComments(SearchQuery query) {
+        return highlightSearch(searchRepository.searchComments(query), query.getQuery());
     }
 
     @Override
-    public List<Profile> searchProfiles(String text) {
-        return searchRepository.searchProfiles(text);
+    public List<Profile> searchProfiles(SearchQuery query) {
+        return highlightSearch(searchRepository.searchProfiles(query), query.getQuery());
     }
 
     @Override
-    public List<Searchable> search(String text) {
-        return highlightSearch(searchRepository.search(text), text);
+    public List<Searchable> search(SearchQuery query) {
+        return highlightSearch(searchRepository.search(query), query.getQuery());
     }
 }
