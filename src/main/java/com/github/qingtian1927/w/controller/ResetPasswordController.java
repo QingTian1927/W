@@ -21,6 +21,23 @@ public class ResetPasswordController {
         this.resetPasswordRequestService = resetPasswordRequestService;
     }
 
+    @GetMapping(value = {"/reset-password/email"})
+    public String email() {
+        return "/email/reset_password_email";
+    }
+
+    @GetMapping(value = {"/reset-password/email/{id}"})
+    public String email(@PathVariable("id") String id, Model model) {
+        Optional<ResetPasswordRequest> request = resetPasswordRequestService.findById(UUID.fromString(id));
+        if (request.isEmpty()) {
+            model.addAttribute("error", "No email found");
+            return "redirect:/error";
+        }
+
+        model.addAttribute("request", request.get());
+        return "/email/reset_password_email";
+    }
+
     @GetMapping(value = {"/reset-password/request"})
     public String request() {
         return "reset_password_request";
@@ -40,9 +57,9 @@ public class ResetPasswordController {
     public String createRequest(@ModelAttribute ResetPasswordForm params) {
         Optional<ResetPasswordRequest> request = resetPasswordRequestService.save(params.getEmail());
         if (request.isPresent()) {
-            return "redirect:/reset-password/request/" + request.get().getId();
+            return "redirect:/reset-password/email/" + request.get().getId();
         }
-        return "redirect:/reset-password/request";
+        return "redirect:/reset-password/email";
     }
 
     @PostMapping(value = {"/reset-password/request/{id}/process"})
