@@ -23,6 +23,10 @@ public class SearchRepository {
     public static final int COMMENT_PAGE_SIZE = 50;
     public static final int PROFILE_PAGE_SIZE = 15;
 
+    public static final String TABLE_POSTS = "posts";
+    public static final String TABLE_COMMENTS = "comments";
+    public static final String TABLE_PROFILES = "profiles";
+
     private final PostService postService;
     private final UserService userService;
     private final CommentService commentService;
@@ -37,7 +41,7 @@ public class SearchRepository {
         this.commentService = commentService;
     }
 
-    public static boolean isInvalidPageNumber(Integer pageNumber) {
+    private static boolean isInvalidPageNumber(Integer pageNumber) {
         return pageNumber < 0;
     }
 
@@ -127,35 +131,62 @@ public class SearchRepository {
         ));
     }
 
-    public List<Post> searchPosts(SearchQuery searchQuery) {
+    private Query buildQuery(SearchQuery searchQuery, String table) {
         String terms = searchQuery.getQuery();
         Integer pageNumber = searchQuery.getPage();
+        String sort = searchQuery.getSort();
 
         String sql;
-        if (pageNumber == null) {
-            sql = "SELECT * FROM posts WHERE FREETEXT (content, :terms) ORDER BY created_at";
+        if (sort == null) {
+            switch (table) {
+                case TABLE_POSTS, TABLE_COMMENTS -> sql = "SELECT * FROM %s WHERE FREETEXT(content, :terms)";
+                case TABLE_PROFILES -> sql = "SELECT * FROM %s WHERE FREETEXT(bio, :terms)";
+                default -> throw new IllegalArgumentException("Invalid table: " + table);
+            }
         } else {
-            sql = """
-                    SELECT * FROM posts
-                    WHERE FREETEXT (content, :terms)
-                    ORDER BY created_at
-                    OFFSET :rows ROWS
-                    FETCH NEXT :pageSize ROWS ONLY
-                """;
+            boolean isDesc = sort.contains("desc");
+
+            switch (table) {
+                case TABLE_POSTS, TABLE_COMMENTS -> sql = "SELECT * FROM %s WHERE FREETEXT(content, :terms) ORDER BY created_at";
+                case TABLE_PROFILES -> sql = "SELECT * FROM %s WHERE FREETEXT(bio, :terms) ORDER BY user_id";
+                default -> throw new IllegalArgumentException("Invalid table: " + table);
+            }
+
+            sql += " ";
+            sql += (isDesc) ? "DESC" : "ASC";
         }
 
-        Query query;
-        query = entityManager.createNativeQuery(sql);
+        sql = String.format(sql, table);
+        int pageSize = 0;
+
+        if (pageNumber != null) {
+            sql += "OFFSET :rows ROWS FETCH NEXT :pageSize ROWS ONLY";
+
+            switch (table) {
+                case TABLE_POSTS -> pageSize = POST_PAGE_SIZE;
+                case TABLE_COMMENTS -> pageSize = COMMENT_PAGE_SIZE;
+                case TABLE_PROFILES -> pageSize = PROFILE_PAGE_SIZE;
+                default -> throw new IllegalArgumentException("Invalid table: " + table);
+            }
+        }
+
+        Query query = entityManager.createNativeQuery(sql);
         query.setParameter("terms", terms);
 
         if (pageNumber != null) {
             if (isInvalidPageNumber(pageNumber)) {
-                return new ArrayList<>();
+                throw new IllegalArgumentException("Invalid page number: " + pageNumber);
             }
-            query.setParameter("rows", pageNumber * POST_PAGE_SIZE);
-            query.setParameter("pageSize", POST_PAGE_SIZE);
+            query.setParameter("rows", pageNumber * pageSize);
+            query.setParameter("pageSize", pageSize);
         }
 
+        System.out.println("SQL: " + sql);
+        return query;
+    }
+
+    public List<Post> searchPosts(SearchQuery searchQuery) {
+        Query query = buildQuery(searchQuery, TABLE_POSTS);
         List<Object[]> results = (List<Object[]>) query.getResultList();
         List<Post> posts = new ArrayList<>();
 
@@ -166,34 +197,7 @@ public class SearchRepository {
     }
 
     public List<Comment> searchComments(SearchQuery searchQuery) {
-        String terms = searchQuery.getQuery();
-        Integer pageNumber = searchQuery.getPage();
-
-        String sql;
-        if (pageNumber == null) {
-            sql = "SELECT * FROM comments WHERE FREETEXT (content, :terms) ORDER BY created_at";
-        } else {
-            sql = """
-                    SELECT * FROM comments
-                    WHERE FREETEXT (content, :terms)
-                    ORDER BY created_at
-                    OFFSET :rows ROWS
-                    FETCH NEXT :pageSize ROWS ONLY
-                """;
-        }
-
-        Query query;
-        query = entityManager.createNativeQuery(sql);
-        query.setParameter("terms", terms);
-
-        if (pageNumber != null) {
-            if (isInvalidPageNumber(pageNumber)) {
-                return new ArrayList<>();
-            }
-            query.setParameter("rows", pageNumber * COMMENT_PAGE_SIZE);
-            query.setParameter("pageSize", COMMENT_PAGE_SIZE);
-        }
-
+        Query query = buildQuery(searchQuery, TABLE_COMMENTS);
         List<Object[]> results = (List<Object[]>) query.getResultList();
         List<Comment> comments = new ArrayList<>();
 
@@ -204,34 +208,7 @@ public class SearchRepository {
     }
 
     public List<Profile> searchProfiles(SearchQuery searchQuery) {
-        String terms = searchQuery.getQuery();
-        Integer pageNumber = searchQuery.getPage();
-
-        String sql;
-        if (pageNumber == null) {
-            sql = "SELECT * FROM profiles WHERE FREETEXT (bio, :terms) ORDER BY user_id DESC";
-        } else {
-            sql = """
-                    SELECT * FROM profiles
-                    WHERE FREETEXT (bio, :terms)
-                    ORDER BY user_id DESC
-                    OFFSET :rows ROWS
-                    FETCH NEXT :pageSize ROWS ONLY
-                """;
-        }
-
-        Query query;
-        query = entityManager.createNativeQuery(sql);
-        query.setParameter("terms", terms);
-
-        if (pageNumber != null) {
-            if (isInvalidPageNumber(pageNumber)) {
-                return new ArrayList<>();
-            }
-            query.setParameter("rows", pageNumber * PROFILE_PAGE_SIZE);
-            query.setParameter("pageSize", PROFILE_PAGE_SIZE);
-        }
-
+        Query query = buildQuery(searchQuery, TABLE_PROFILES);
         List<Object[]> results = (List<Object[]>) query.getResultList();
         List<Profile> profiles = new ArrayList<>();
 
@@ -244,7 +221,7 @@ public class SearchRepository {
     public List<Searchable> searchAll(SearchQuery searchQuery) {
         List<Searchable> resultList = new ArrayList<>();
 
-        SearchQuery searchAllQuery = new SearchQuery(searchQuery.getQuery(), null, searchQuery.getPage());
+        SearchQuery searchAllQuery = new SearchQuery(searchQuery.getQuery(), null, searchQuery.getPage(), searchQuery.getSort());
         resultList.addAll(this.searchPosts(searchAllQuery));
         resultList.addAll(this.searchComments(searchAllQuery));
         resultList.addAll(this.searchProfiles(searchAllQuery));

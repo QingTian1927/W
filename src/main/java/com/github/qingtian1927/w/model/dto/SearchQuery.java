@@ -10,17 +10,23 @@ public class SearchQuery {
     public static final String FILTER_COMMENTS = "comments";
     public static final String FILTER_USERS = "users";
 
+    public static final String SORT_DATE_ASC = "date-asc";
+    public static final String SORT_DATE_DESC = "date-desc";
+
     @NotNull
     private String query;
     @Null
     private String filter = null;
     @Null
     private Integer page = null;
+    @Null
+    private String sort = SORT_DATE_ASC;
 
-    public SearchQuery(String query, String filter, Integer page) {
+    public SearchQuery(String query, String filter, Integer page, String sort) {
         this.query = query;
         this.setFilter(filter);
         this.setPage(page);
+        this.setSort(sort);
     }
 
     public void setFilter(String filter) {
@@ -33,6 +39,18 @@ public class SearchQuery {
             throw new IllegalArgumentException("Invalid filter: " + filter);
         }
         this.filter = filter;
+    }
+
+    public void setSort(String sort) {
+        if (sort == null || sort.isEmpty()) {
+            this.sort = sort;
+            return;
+        }
+
+        if (!sort.equals(SORT_DATE_ASC) && !sort.equals(SORT_DATE_DESC)) {
+            throw new IllegalArgumentException("Invalid sort: " + sort);
+        }
+        this.sort = sort;
     }
 
     public void setPage(Integer page) {

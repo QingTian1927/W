@@ -17,7 +17,8 @@
         <th:block th:insert="~{fragments/viewfeed_header}"></th:block>
 
         <div class="size-full mt-3 md:mt-0 flex flex-col justify-start items-center gap-6">
-            <form th:action="@{/search}" method="GET" class="w-full mb-0 flex justify-start items-center gap-3">
+            <form th:action="@{/search}" method="GET"
+                  class="w-full mb-0 flex flex-wrap justify-start items-center gap-3">
                 <input type="hidden" name="query" th:value="${(param.query != null) ? param.query : ''}">
 
                 <button type="submit" name="filter" value="posts"
@@ -68,13 +69,29 @@
                     </svg>
                     <span>No Filters</span>
                 </button>
+
+                <div class="no-grow lg:grow flex justify-start lg:justify-end items-center gap-3">
+                    <button type="submit" name="sort" value="date-asc"
+                            class="min-w-10 min-h-10 p-3 flex justify-center items-center gap-3 rounded-lg"
+                            th:classappend="${(param.sort != null && param.sort.contains('date-asc')) ? 'text-darker bg-lightgreen' : 'btn-pagination'}"
+                    >
+                        <span>Date ascending</span>
+                    </button>
+
+                    <button type="submit" name="sort" value="date-desc"
+                            class="min-w-10 min-h-10 p-3 flex justify-center items-center gap-3 rounded-lg"
+                            th:classappend="${(param.sort != null && param.sort.contains('date-desc')) ? 'text-darker bg-lightgreen' : 'btn-pagination'}"
+                    >
+                        <span>Date descending</span>
+                    </button>
+                </div>
             </form>
 
             <th:block th:if="${results != null}" th:each="result : ${results}">
                 <th:block
                         th:if="${result.getType().equals(result.TYPE_POST) || result.getType().equals(result.TYPE_COMMENT)}">
                     <article
-                            class="w-full p-3 mb-3 last:mb-0 flex flex-col justify-start items-start gap-3 rounded-lg shadow-sm border-2 border-light">
+                            class="w-full p-3 last:mb-0 flex flex-col justify-start items-start gap-3 rounded-lg shadow-sm border-2 border-light">
                         <div th:with="profile = ${@profileServiceImpl.findById(result.getUser().getId())}, user = ${result.getUser()}"
                              class="w-full flex justify-start items-center gap-3">
                             <a th:href="@{/users/{id}(id = ${user.getId()})}"
@@ -159,7 +176,7 @@
                             </div>
 
                             <div class="w-full p-6 flex flex-col justify-start items-center">
-                                <div class="w-full mb-3 flex justify-end">
+                                <div class="w-full mb-6 flex justify-end">
                                     <a th:href="@{/users/{id}(id = ${user.getId()})}"
                                        class="w-[7.5em] p-3 flex justify-center items-center rounded-full btn-accent"
                                     >
