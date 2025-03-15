@@ -4,10 +4,12 @@ import com.github.qingtian1927.w.model.ResetPasswordRequest;
 import com.github.qingtian1927.w.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.UUID;
 
+@Repository
 public interface ResetPasswordRequestRepository extends JpaRepository<ResetPasswordRequest, UUID> {
 
     List<ResetPasswordRequest> findByUser(User user);
