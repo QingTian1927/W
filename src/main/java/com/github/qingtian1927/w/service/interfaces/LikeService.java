@@ -15,4 +15,5 @@ public interface LikeService {
     Optional<Like> findById(User user, Post post);
     Like save(Like like);
     int countByPost(Post post);
+    void deleteByPost(Post post);
 }

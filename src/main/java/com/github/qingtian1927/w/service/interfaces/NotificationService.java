@@ -17,6 +17,8 @@ public interface NotificationService {
 
     void deleteById(Long id);
 
+    void deleteByReferencedPost(Post post);
+
     static Notification buildNotification(NotificationForm params, User toUser, Optional<User> fromUser, Optional<Post> referencedPost) {
         Notification notification = new Notification();
         notification.setToUser(toUser);

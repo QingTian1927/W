@@ -4,6 +4,8 @@ import com.github.qingtian1927.w.model.Post;
 import com.github.qingtian1927.w.model.User;
 import com.github.qingtian1927.w.repository.PostRepository;
 import com.github.qingtian1927.w.service.interfaces.CommentService;
+import com.github.qingtian1927.w.service.interfaces.LikeService;
+import com.github.qingtian1927.w.service.interfaces.NotificationService;
 import com.github.qingtian1927.w.service.interfaces.PostService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +19,15 @@ import java.util.*;
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final CommentService commentService;
+    private final LikeService likeService;
+    private final NotificationService notificationService;
 
     @Autowired
-    public PostServiceImpl(PostRepository postRepository, CommentService commentService) {
+    public PostServiceImpl(PostRepository postRepository, CommentService commentService, LikeService likeService, NotificationService notificationService) {
         this.postRepository = postRepository;
         this.commentService = commentService;
+        this.likeService = likeService;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -79,6 +85,8 @@ public class PostServiceImpl implements PostService {
     public void deleteById(Long id) {
         Optional<Post> post = postRepository.findById(id);
         if (post.isPresent()) {
+            notificationService.deleteByReferencedPost(post.get());
+            likeService.deleteByPost(post.get());
             commentService.deleteByPost(post.get());
             postRepository.deleteById(id);
         }

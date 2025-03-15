@@ -50,4 +50,9 @@ public class LikeServiceImpl implements LikeService {
     public int countByPost(Post post) {
         return this.likeRepository.countByPost(post);
     }
+
+    @Override
+    public void deleteByPost(Post post) {
+        this.likeRepository.deleteByPost(post);
+    }
 }

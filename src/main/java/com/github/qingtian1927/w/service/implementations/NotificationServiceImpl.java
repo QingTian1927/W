@@ -40,4 +40,9 @@ public class NotificationServiceImpl implements NotificationService {
     public void deleteById(Long id) {
         notificationRepository.deleteById(id);
     }
+
+    @Override
+    public void deleteByReferencedPost(Post post) {
+        notificationRepository.deleteByReferencedPost(post);
+    }
 }
