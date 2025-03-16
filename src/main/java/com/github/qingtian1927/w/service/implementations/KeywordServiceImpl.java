@@ -2,6 +2,7 @@ package com.github.qingtian1927.w.service.implementations;
 
 import com.github.qingtian1927.w.model.Keyword;
 import com.github.qingtian1927.w.model.Post;
+import com.github.qingtian1927.w.model.dto.SimilarPost;
 import com.github.qingtian1927.w.repository.KeywordRepository;
 import com.github.qingtian1927.w.service.interfaces.KeywordService;
 import com.github.qingtian1927.w.service.interfaces.PostService;
@@ -43,7 +44,8 @@ public class KeywordServiceImpl implements KeywordService {
                 .toList();
     }
 
-    public List<Post> findSimilarPosts(String content) {
+    public List<SimilarPost> findSimilarPosts(Post originalPost) {
+        String content = originalPost.getContent();
         List<String> topics = findMainTopics(content);
 
         if (topics.isEmpty()) {
@@ -58,16 +60,17 @@ public class KeywordServiceImpl implements KeywordService {
         // Limit results to top 10 similar posts
 
         return allPosts.stream()
-                .filter(post -> {
+                .filter(post -> !post.getId().equals(originalPost.getId()))
+                .map(post -> {
                     List<String> postTopics = findMainTopics(post.getContent());
-                    return !Collections.disjoint(topics, postTopics);
+                    return new SimilarPost(post, post.getUser(), postTopics);
                 })
-                .sorted(Comparator.comparingInt(post -> {
-                    List<String> postTopics = findMainTopics(((Post) post).getContent());
-                    return (int) postTopics.stream().filter(topics::contains).count();
-                }).reversed())
+                .filter(similarPost -> !Collections.disjoint(topics, similarPost.getTopics())
+                )
+                .sorted(Comparator.comparingInt(similarPost ->
+                        (int) topics.stream().filter(((SimilarPost) similarPost).getTopics()::contains).count()
+                ).reversed())
                 .limit(SIMILAR_POST_SIZE)
                 .toList();
-
     }
 }

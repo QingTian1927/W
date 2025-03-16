@@ -36,8 +36,18 @@
                         </svg>
                     </button>
                 </form>
+            </div>
 
-
+            <div class="size-full grid grid-cols-3 justify-start items-center gap-3">
+                <th:block th:if="${similarPosts != null}" th:each="similarPost : ${similarPosts}">
+                    <a th:href="@{/post/{id}(id = ${similarPost.getPost().getId()})}" class="size-full p-3 rounded-lg bg-light-faded">
+                        <div class="w-full">
+                            <span th:text="${(similarPost.getTopics().size() > 0) ? similarPost.getTopics().get(0) : 'Other'}" class="font-semibold text-lg text-darker"></span>
+                            <span th:text="${'by ' + similarPost.getUser().getDisplayName()}" class="font-semibold text-lg break-words text-darker"></span>
+                        </div>
+                        <p th:text="${similarPost.getContent()}"></p>
+                    </a>
+                </th:block>
             </div>
 
             <div class="size-full flex flex-col justify-start items-center">

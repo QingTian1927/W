@@ -10,15 +10,12 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class TrendingPost {
-    private Post post;
-    private User user;
-    private List<String> topics;
-    private int likes;
-    private int comments;
-    private int trendingScore;
+public class SimilarPost {
+    public Post post;
+    public User user;
+    public List<String> topics;
 
-    public String getPreview() {
+    public String getContent() {
         return ContentFormatter.getShortenedPreview(this.post.getContent());
     }
 }

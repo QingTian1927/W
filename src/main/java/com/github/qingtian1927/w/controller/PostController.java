@@ -4,6 +4,7 @@ import com.github.qingtian1927.w.model.*;
 import com.github.qingtian1927.w.model.dto.CommentForm;
 import com.github.qingtian1927.w.model.dto.NotificationForm;
 import com.github.qingtian1927.w.model.dto.PostForm;
+import com.github.qingtian1927.w.model.dto.SimilarPost;
 import com.github.qingtian1927.w.service.interfaces.*;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.Size;
@@ -25,14 +26,16 @@ public class PostController {
     private final LikeService likeService;
     private final CommentService commentService;
     private final NotificationService notificationService;
+    private final KeywordService keywordService;
 
     @Autowired
-    public PostController(UserService userService, PostService postService, LikeService likeService, CommentService commentService, NotificationService notificationService) {
+    public PostController(UserService userService, PostService postService, LikeService likeService, CommentService commentService, NotificationService notificationService, KeywordService keywordService) {
         this.userService = userService;
         this.postService = postService;
         this.likeService = likeService;
         this.commentService = commentService;
         this.notificationService = notificationService;
+        this.keywordService = keywordService;
     }
 
     private User getAuthenticatedUser() {
@@ -72,6 +75,12 @@ public class PostController {
             List<Comment> comments = commentService.listPostCommentDateDesc(post.get());
             if (!comments.isEmpty()) {
                 model.addAttribute("comments", comments);
+            }
+
+            List<SimilarPost> similarPosts = keywordService.findSimilarPosts(post.get());
+            System.out.println(similarPosts);
+            if (!similarPosts.isEmpty()) {
+                model.addAttribute("similarPosts", similarPosts);
             }
         }
         return "post";
