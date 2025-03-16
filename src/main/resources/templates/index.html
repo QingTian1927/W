@@ -14,46 +14,69 @@
     <th:block th:insert="~{fragments/sidebar}"></th:block>
 </aside>
 <main class="min-h-[90%] md:min-h-full w-full md:w-[70%] xl:w-[80%] p-3 pb-0 md:pb-3 flex flex-col justify-center items-center">
-    <div class="grow size-full p-6 rounded-lg shadow-md md:shadow-lg bg-lighter text-dark">
+    <div class="relative grow size-full flex flex-col md:flex-row-reverse rounded-lg shadow-md md:shadow-lg bg-lighter text-dark">
         <th:block th:insert="~{fragments/viewfeed_header}"></th:block>
 
-        <div th:if="${#authentication.principal != 'anonymousUser'}"
-             class="w-full min-h-48 p-6 mt-3 md:mt-0 mb-6 flex items-start gap-6 rounded-lg shadow-sm border-2 border-light">
-            <div class="h-full min-h-48 flex justify-center items-start">
-                <a class="h-12 aspect-square rounded-full flex justify-center items-center bg-darker">
-                    <svg th:if="${#authentication.getPrincipal().getProfile().getAvatar() == null}"
-                         xmlns="http://www.w3.org/2000/svg"
-                         class="bi bi-person-fill m-1 fill-lighter size-[1.5em]"
-                         viewBox="0 0 16 16">
-                        <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
-                    </svg>
+        <div class="min-h-full w-full md:w-[35%] px-6 pt-3 pb-0 md:pt-6 md:pb-6 flex flex-col gap-6 rounded-r-lg bg-lighter border-l-2 border-light">
+            <div class="w-full min-h-60 p-6 flex flex-col items-center gap-6 rounded-lg shadow-sm border-2 border-light">
+                <h2 class="w-full font-bold text-3xl">Trending posts</h2>
 
-                    <img th:id="user-avatar-image"
-                         th:if="${#authentication.getPrincipal().getProfile().getAvatar() != null}"
-                         class="size-full object-cover object-center rounded-full"
-                         th:src="@{/users/{id}/avatar(id = ${#authentication.getPrincipal().getUser().getId()})}"
-                         th:alt="${#authentication.getPrincipal().getUser().getDisplayName() + ' avatar image'}"/>
-                </a>
-            </div>
-
-            <form th:action="@{/post/create}" method="POST"
-                  class="grow min-h-48 m-0 flex flex-col justify-center items-start gap-3">
-                <input type="hidden" name="redirect" th:value="@{/}"/>
-                <label for="post-content" class="w-full grow">
-                    <textarea id="post-content" name="content" minlength="1" maxlength="300" rows="4"
-                              placeholder="What is happening?!" class="size-full text-lg search-input"></textarea>
-                </label>
-                <div class="w-full flex justify-end items-center">
-                    <button type="submit" class="w-[7.5em] p-3 rounded-full text-center font-semibold btn-accent">Post
-                    </button>
+                <div class="w-full flex flex-col justify-start items-center gap-3">
+                    <th:block th:if="${trendingPosts != null}"
+                              th:each="trendingPost, trendingPostStat : ${trendingPosts}">
+                        <a th:href="@{/post/{id}(id = ${trendingPost.getPost().getId()})}" class="w-full">
+                            <div class="w-full max-w-full mb-1 font-semibold text-lg text-darker">
+                                <span th:text="${trendingPostStat.count + '. ' + trendingPost.getTopics().get(0)}"
+                                      class=""></span>
+                                <span th:text="${'by ' + trendingPost.getUser().getDisplayName()}" class=""></span>
+                            </div>
+                            <p th:text="${trendingPost.getPreview()}" class="w-full max-w-full"></p>
+                        </a>
+                    </th:block>
                 </div>
-            </form>
+            </div>
         </div>
 
-        <div class="size-full flex flex-col justify-start items-center gap-6">
-            <th:block th:if="${posts != null}" th:each="post : ${posts}">
-                <th:block th:insert="~{fragments/post :: post (post = ${post})}"></th:block>
-            </th:block>
+        <div class="h-full w-full md:w-[65%] p-6 flex flex-col gap-6">
+            <div th:if="${#authentication.principal != 'anonymousUser'}"
+                 class="w-full min-h-48 p-6 flex items-start gap-6 rounded-lg shadow-sm border-2 border-light">
+                <div class="h-full min-h-48 flex justify-center items-start">
+                    <a class="h-12 aspect-square rounded-full flex justify-center items-center bg-darker">
+                        <svg th:if="${#authentication.getPrincipal().getProfile().getAvatar() == null}"
+                             xmlns="http://www.w3.org/2000/svg"
+                             class="bi bi-person-fill m-1 fill-lighter size-[1.5em]"
+                             viewBox="0 0 16 16">
+                            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                        </svg>
+
+                        <img th:id="user-avatar-image"
+                             th:if="${#authentication.getPrincipal().getProfile().getAvatar() != null}"
+                             class="size-full object-cover object-center rounded-full"
+                             th:src="@{/users/{id}/avatar(id = ${#authentication.getPrincipal().getUser().getId()})}"
+                             th:alt="${#authentication.getPrincipal().getUser().getDisplayName() + ' avatar image'}"/>
+                    </a>
+                </div>
+
+                <form th:action="@{/post/create}" method="POST"
+                      class="grow min-h-48 m-0 flex flex-col justify-center items-start gap-3">
+                    <input type="hidden" name="redirect" th:value="@{/}"/>
+                    <label for="post-content" class="w-full grow">
+                    <textarea id="post-content" name="content" minlength="1" maxlength="1024" rows="4"
+                              placeholder="What is happening?!" class="size-full text-lg search-input"></textarea>
+                    </label>
+                    <div class="w-full flex justify-end items-center">
+                        <button type="submit" class="w-[7.5em] p-3 rounded-full text-center font-semibold btn-accent">
+                            Post
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="size-full flex flex-col justify-start items-center gap-6">
+                <th:block th:if="${posts != null}" th:each="post : ${posts}">
+                    <th:block th:insert="~{fragments/post :: post (post = ${post})}"></th:block>
+                </th:block>
+            </div>
         </div>
     </div>
 

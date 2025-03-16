@@ -5,7 +5,7 @@ import com.github.qingtian1927.w.model.CustomUserDetails;
 import com.github.qingtian1927.w.model.User;
 import com.github.qingtian1927.w.service.interfaces.NotificationService;
 import com.github.qingtian1927.w.service.interfaces.PostService;
-import com.github.qingtian1927.w.service.interfaces.UserService;
+import com.github.qingtian1927.w.service.interfaces.StatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,19 +17,20 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class MainController {
     private final PostService postService;
-    private final UserService userService;
     private final NotificationService notificationService;
+    private final StatisticsService statisticsService;
 
     @Autowired
-    public MainController(PostService postService, UserService userService, NotificationService notificationService) {
+    public MainController(PostService postService, NotificationService notificationService, StatisticsService statisticsService) {
         this.postService = postService;
-        this.userService = userService;
         this.notificationService = notificationService;
+        this.statisticsService = statisticsService;
     }
 
     @GetMapping(value = {"/", "/index"})
     public String index(Model model) {
         model.addAttribute("posts", postService.findAllByOrderByCreatedDateDesc());
+        model.addAttribute("trendingPosts", statisticsService.getWeeklyTrendingPosts(3));
         return "index";
     }
 
