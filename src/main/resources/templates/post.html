@@ -22,10 +22,10 @@
             <div class="min-h-20 w-full flex">
                 <form th:action="@{/post/{id}/comment(id = ${post.getId()})}" method="POST"
                       class="min-h-20 size-full m-0 flex">
-                    <label class="min-h-20 w-[92.5%] h-full bg-light-faded">
+                    <label class="min-h-20 w-[92.5%] h-full rounded-lg bg-light-faded">
                      <textarea id="comment-content" name="content" minlength="1" maxlength="300"
                                placeholder="Write your reply"
-                               class="min-h-20 size-full p-3 rounded-l-lg bg-light-faded search-input"></textarea>
+                               class="min-h-20 size-full p-3 rounded-lg bg-light-faded search-input"></textarea>
                     </label>
 
                     <button type="submit"

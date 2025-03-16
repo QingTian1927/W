@@ -21,8 +21,8 @@ public class Post implements Searchable {
     @Column(name = "content", length = 1024, columnDefinition = "NVARCHAR(MAX)")
     private String content;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id", nullable = true)
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne(cascade = CascadeType.ALL)
