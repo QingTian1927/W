@@ -1,6 +1,7 @@
 package com.github.qingtian1927.w.config;
 
 import com.github.qingtian1927.w.security.CaptchaAuthenticationFilter;
+import com.github.qingtian1927.w.security.IndexPageRequestMatcher;
 import com.github.qingtian1927.w.service.implementations.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,6 +51,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain SecurityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth
+                .requestMatchers(new IndexPageRequestMatcher()).permitAll()
                 .requestMatchers(
                         "/", "/actuator/**", "/signup", "/login", "/css/**", "/users/**", "/post/**",
                         "/comment/**", "/search/**", "/forgot-password", "/reset-password/**"

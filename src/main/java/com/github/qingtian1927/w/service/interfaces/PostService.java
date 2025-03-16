@@ -12,7 +12,7 @@ public interface PostService {
     Optional<Post> findById(Long id);
     List<Post> findByRepost(Post post);
     List<Post> findByUser(User user);
-    List<Post> findAllByOrderByCreatedDateDesc();
+    Page<Post> findAllByOrderByCreatedDateDesc(Pageable pageable);
     List<Post> findAllByOrderByCreatedDateAsc();
     List<Post> listRecentPosts();
     List<Post> findAll();

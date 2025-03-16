@@ -1,0 +1,49 @@
+<div th:fragment="pagination_bar (link, page, pageNumber)" class="grow w-full flex justify-center items-end gap-3">
+    <a th:href="@{{link}/1(link = ${link})}"
+       class="aspect-square h-8 p-1 flex justify-center items-center rounded-md btn-pagination"
+       th:classappend="${(pageNumber > 1) ? 'visible' : 'invisible'}">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="bi bi-chevron-double-left fill-dark size-[1em]" viewBox="0 0 16 16">
+            <path fill-rule="evenodd"
+                  d="M8.354 1.646a.5.5 0 0 1 0 .708L2.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
+            <path fill-rule="evenodd"
+                  d="M12.354 1.646a.5.5 0 0 1 0 .708L6.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
+        </svg>
+    </a>
+
+    <a th:href="@{{link}/{prev}(prev = ${pageNumber - 1}, link = ${link})}"
+       class="aspect-square h-8 p-1 flex justify-center items-center rounded-md btn-pagination"
+       th:classappend="${(page.hasPrevious()) ? 'visible' : 'invisible'}">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="bi bi-chevron-left fill-dark size-[1em]" viewBox="0 0 16 16">
+            <path fill-rule="evenodd"
+                  d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
+        </svg>
+    </a>
+
+    <div class="min-h-8 flex justify-center items-center">
+        <span th:text="${pageNumber + ' of ' + page.getTotalPages() + ' pages'}"></span>
+    </div>
+
+    <a th:href="@{{link}/{next}(next = ${pageNumber + 1}, link = ${link})}"
+       class="aspect-square h-8 p-1 flex justify-center items-center rounded-md btn-pagination"
+       th:classappend="${(page.hasNext()) ? 'visible' : 'invisible'}">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="bi bi-chevron-right fill-dark size-[1em]" viewBox="0 0 16 16">
+            <path fill-rule="evenodd"
+                  d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/>
+        </svg>
+    </a>
+
+    <a th:href="@{{link}/{last}(last = ${page.getTotalPages()}, link = ${link})}"
+       class="aspect-square h-8 p-1 flex justify-center items-center rounded-md btn-pagination"
+       th:classappend="${(pageNumber < page.getTotalPages()) ? 'visible' : 'invisible'}">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="bi bi-chevron-double-right fill-dark size-[1em]" viewBox="0 0 16 16">
+            <path fill-rule="evenodd"
+                  d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708"/>
+            <path fill-rule="evenodd"
+                  d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708"/>
+        </svg>
+    </a>
+</div>

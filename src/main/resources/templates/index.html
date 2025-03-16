@@ -113,11 +113,13 @@
                 </form>
             </div>
 
-            <div class="size-full flex flex-col justify-start items-center gap-6">
+            <div th:with="posts = ${page.getContent()}" class="size-full flex flex-col justify-start items-center gap-6">
                 <th:block th:if="${posts != null}" th:each="post : ${posts}">
                     <th:block th:insert="~{fragments/post :: post (post = ${post})}"></th:block>
                 </th:block>
             </div>
+
+            <th:block th:insert="~{fragments/pagination_bar :: pagination_bar (link = ${''}, page = ${page}, pageNumber = ${pageNumber})}"></th:block>
         </div>
     </div>
 

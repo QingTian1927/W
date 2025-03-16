@@ -46,8 +46,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> findAllByOrderByCreatedDateDesc() {
-        return postRepository.findAllByOrderByCreatedDateDesc();
+    public Page<Post> findAllByOrderByCreatedDateDesc(Pageable pageable) {
+        return postRepository.findAllByOrderByCreatedDateDesc(pageable);
     }
 
     @Override
