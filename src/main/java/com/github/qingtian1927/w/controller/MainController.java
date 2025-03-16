@@ -30,7 +30,8 @@ public class MainController {
     @GetMapping(value = {"/", "/index"})
     public String index(Model model) {
         model.addAttribute("posts", postService.findAllByOrderByCreatedDateDesc());
-        model.addAttribute("trendingPosts", statisticsService.getWeeklyTrendingPosts(3));
+        model.addAttribute("trendingPosts", statisticsService.getWeeklyTrendingPosts(5));
+        model.addAttribute("trendingUsers", statisticsService.getWeeklyTrendingUsers(5));
         return "index";
     }
 

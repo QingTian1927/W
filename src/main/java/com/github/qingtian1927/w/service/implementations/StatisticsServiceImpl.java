@@ -63,4 +63,9 @@ public class StatisticsServiceImpl implements StatisticsService {
         }
         return trendingPosts;
     }
+
+    @Override
+    public List<TrendingUser> getWeeklyTrendingUsers(int limit) {
+        return statisticsRepository.getWeeklyTrendingUsers(limit);
+    }
 }

@@ -375,4 +375,51 @@ public class StatisticsRepository {
 
         return trendingPosts;
     }
+
+    public List<TrendingUser> getWeeklyTrendingUsers(int limit) {
+        String sql = """
+                    WITH recent_posts AS (
+                        SELECT id, user_id FROM posts WHERE created_at >= DATEADD(DAY, -7, GETDATE())
+                    ),
+                    recent_follows AS (
+                        SELECT followed_id FROM follows WHERE created_at >= DATEADD(DAY, -7, GETDATE())
+                    ),
+                    recent_likes AS (
+                        SELECT post_id FROM likes WHERE created_at >= DATEADD(DAY, -7, GETDATE())
+                    ),
+                    recent_comments AS (
+                        SELECT post_id FROM comments WHERE created_at >= DATEADD(DAY, -7, GETDATE())
+                    )
+                    SELECT TOP %d
+                        u.id,
+                        (COALESCE(f.follows, 0) * 2 + COALESCE(p.posts, 0) * 3 +
+                         COALESCE(l.likes, 0) + COALESCE(c.comments, 0) * 2) AS trending_score
+                    FROM users u
+                    LEFT JOIN (SELECT followed_id, COUNT(*) AS follows FROM recent_follows GROUP BY followed_id) f ON u.id = f.followed_id
+                    LEFT JOIN (SELECT user_id, COUNT(*) AS posts FROM recent_posts GROUP BY user_id) p ON u.id = p.user_id
+                    LEFT JOIN (SELECT user_id, COUNT(*) AS likes FROM recent_likes l JOIN posts p ON l.post_id = p.id GROUP BY p.user_id) l ON u.id = l.user_id
+                    LEFT JOIN (SELECT user_id, COUNT(*) AS comments FROM recent_comments c JOIN posts p ON c.post_id = p.id GROUP BY p.user_id) c ON u.id = c.user_id
+                    ORDER BY trending_score DESC;
+                """;
+
+        sql = String.format(sql, limit);
+        Query query = entityManager.createNativeQuery(sql);
+        List<Object[]> results = query.getResultList();
+        List<TrendingUser> trendingUsers = new ArrayList<>();
+
+        for (Object[] result : results) {
+            Optional<User> user = getUser(((Number) result[0]).longValue());
+            if (user.isEmpty()) {
+                logger.warn("Queried invalid User: {}", user);
+                continue;
+            }
+
+            trendingUsers.add(new TrendingUser(
+                    user.get(),
+                    ((Number) result[1]).intValue()
+            ));
+        }
+
+        return trendingUsers;
+    }
 }

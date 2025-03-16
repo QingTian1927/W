@@ -21,7 +21,7 @@
             <div class="w-full min-h-60 p-6 flex flex-col items-center gap-6 rounded-lg shadow-sm border-2 border-light">
                 <h2 class="w-full font-bold text-3xl">Trending posts</h2>
 
-                <div class="w-full flex flex-col justify-start items-center gap-3">
+                <div class="w-full flex flex-col justify-start items-center gap-6">
                     <th:block th:if="${trendingPosts != null && !trendingPosts.isEmpty()}"
                               th:each="trendingPost, trendingPostStat : ${trendingPosts}">
                         <a th:href="@{/post/{id}(id = ${trendingPost.getPost().getId()})}" class="w-full">
@@ -32,6 +32,47 @@
                             </div>
                             <p th:text="${trendingPost.getPreview()}" class="w-full max-w-full"></p>
                         </a>
+                    </th:block>
+                </div>
+            </div>
+
+            <div class="w-full min-h-60 p-6 flex flex-col items-center gap-6 rounded-lg shadow-sm border-2 border-light">
+                <h2 class="w-full font-bold text-3xl">Trending users</h2>
+
+                <div class="w-full flex flex-col justify-start items-center gap-6">
+                    <th:block th:if="${trendingUsers != null && !trendingUsers.isEmpty()}"
+                              th:each="trendingUser : ${trendingUsers}">
+                        <div class="w-full flex justify-between items-center gap-6">
+                            <div th:with="profile = ${@profileServiceImpl.findById(trendingUser.getUser().getId())}"
+                                 class="max-w-full flex flex-wrap gap-3"
+                            >
+                                <a th:href="@{/users/{id}(id = ${trendingUser.getUser().getId()})}"
+                                   class="aspect-square w-12 rounded-full flex justify-center items-center bg-darker"
+                                >
+                                    <svg th:if="${profile.isPresent() && profile.get().getAvatar() == null}"
+                                         xmlns="http://www.w3.org/2000/svg"
+                                         class="bi bi-person-fill m-1 fill-lighter size-[1.5em]"
+                                         viewBox="0 0 16 16">
+                                        <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                                    </svg>
+
+                                    <img th:with="user = ${trendingUser.getUser()}"
+                                         th:if="${profile.isPresent() && profile.get().getAvatar() != null}"
+                                         class="size-full object-cover object-center rounded-full"
+                                         th:src="@{/users/{id}/avatar(id = ${user.getId()})}"
+                                         th:alt="${user.getDisplayName() + ' avatar image'}"/>
+                                </a>
+
+                                <a th:href="@{/users/{id}(id = ${trendingUser.getUser().getId()})}" >
+                                    <p th:text="${trendingUser.getUser().getDisplayName()}" class="font-medium text-lg text-darker"></p>
+                                    <p th:text="${'@' + trendingUser.getUser().getUsername()}" class="text-sm text-dark-faded"></p>
+                                </a>
+                            </div>
+
+                            <a th:href="@{/users/{id}(id = ${trendingUser.getUser().getId()})}" class="w-[7.5em] p-3 rounded-full text-center font-semibold btn-accent">
+                                Visit
+                            </a>
+                        </div>
                     </th:block>
                 </div>
             </div>

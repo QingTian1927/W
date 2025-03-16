@@ -13,4 +13,5 @@ public interface StatisticsService {
     List<UserActivityCount> countUserActivities();
     int countBannedUsers();
     List<TrendingPost> getWeeklyTrendingPosts(int limit);
+    List<TrendingUser> getWeeklyTrendingUsers(int limit);
 }
