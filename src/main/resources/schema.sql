@@ -75,3 +75,11 @@ IF NOT EXISTS (SELECT *
     END
 
 -- # -------------------------------------------------------------------------------------------------------------------
+
+IF NOT EXISTS (SELECT *
+               FROM sys.indexes
+               WHERE name = 'idx_keywords_word'
+                 AND object_id = OBJECT_ID('keywords'))
+    BEGIN
+        CREATE INDEX idx_keywords_word ON keywords (word);
+    END
