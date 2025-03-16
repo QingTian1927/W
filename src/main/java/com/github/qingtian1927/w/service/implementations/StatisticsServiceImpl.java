@@ -2,6 +2,7 @@ package com.github.qingtian1927.w.service.implementations;
 
 import com.github.qingtian1927.w.model.dto.*;
 import com.github.qingtian1927.w.repository.StatisticsRepository;
+import com.github.qingtian1927.w.service.interfaces.KeywordService;
 import com.github.qingtian1927.w.service.interfaces.StatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,10 +12,12 @@ import java.util.List;
 @Service
 public class StatisticsServiceImpl implements StatisticsService {
     private final StatisticsRepository statisticsRepository;
+    private final KeywordService keywordService;
 
     @Autowired
-    public StatisticsServiceImpl(StatisticsRepository statisticsRepository) {
+    public StatisticsServiceImpl(StatisticsRepository statisticsRepository, KeywordService keywordService) {
         this.statisticsRepository = statisticsRepository;
+        this.keywordService = keywordService;
     }
 
     @Override
@@ -50,5 +53,14 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Override
     public int countBannedUsers() {
         return statisticsRepository.countBannedUsers();
+    }
+
+    @Override
+    public List<TrendingPost> getWeeklyTrendingPosts(int limit) {
+        List<TrendingPost> trendingPosts = statisticsRepository.getWeeklyTrendingPosts(limit);
+        for (TrendingPost trendingPost : trendingPosts) {
+            trendingPost.setTopics(keywordService.findMainTopics(trendingPost.getPost().getContent()));
+        }
+        return trendingPosts;
     }
 }

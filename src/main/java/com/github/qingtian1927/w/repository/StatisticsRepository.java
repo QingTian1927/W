@@ -1,21 +1,43 @@
 package com.github.qingtian1927.w.repository;
 
+import com.github.qingtian1927.w.model.Post;
+import com.github.qingtian1927.w.model.User;
 import com.github.qingtian1927.w.model.dto.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @SuppressWarnings("unchecked")
 @Repository
 public class StatisticsRepository {
 
+    private static final Logger logger = LoggerFactory.getLogger(StatisticsRepository.class);
+
     @PersistenceContext
     private EntityManager entityManager;
+
+    private Optional<Post> getPost(Long id) {
+        String sql = "SELECT * FROM posts WHERE id = :id";
+        Query query = entityManager.createNativeQuery(sql, Post.class);
+        query.setParameter("id", id);
+
+        Post post = (Post) query.getSingleResult();
+        return Optional.ofNullable(post);
+    }
+
+    private Optional<User> getUser(Long id) {
+        String sql = "SELECT * FROM users WHERE id = :id";
+        Query query = entityManager.createNativeQuery(sql, User.class);
+        query.setParameter("id", id);
+
+        User user = (User) query.getSingleResult();
+        return Optional.ofNullable(user);
+    }
 
     public List<AgeGroupCount> getUserAgeGroupCount() {
         String sql = """
@@ -305,5 +327,52 @@ public class StatisticsRepository {
         }
 
         return userActivities;
+    }
+
+    public List<TrendingPost> getWeeklyTrendingPosts(int limit) {
+        String sql = """
+                    SELECT TOP %d
+                        p.id,
+                        p.user_id,
+                        COUNT(l.user_id) AS likes,
+                        COUNT(c.id) AS comments,
+                        COUNT(l.user_id) + (COUNT(c.id) * 2) AS trending_score
+                    FROM
+                        posts p
+                    LEFT JOIN
+                        likes l ON p.id = l.post_id
+                        AND DATEDIFF(day, l.created_at, CURRENT_TIMESTAMP) <= 7
+                    LEFT JOIN
+                        comments c ON p.id = c.post_id
+                        AND DATEDIFF(day, c.created_at, CURRENT_TIMESTAMP) <= 7
+                    GROUP BY p.id, p.user_id
+                    ORDER BY trending_score DESC;
+                """;
+
+        sql = String.format(sql, limit);
+        Query query = entityManager.createNativeQuery(sql);
+        List<Object[]> results = query.getResultList();
+        List<TrendingPost> trendingPosts = new ArrayList<>();
+
+        for (Object[] result : results) {
+            Optional<Post> post = getPost(((Number) result[0]).longValue());
+            Optional<User> user = getUser(((Number) result[1]).longValue());
+
+            if (post.isEmpty() || user.isEmpty()) {
+                logger.warn("Queried invalid Post or User: {}, {}", post, user);
+                continue;
+            }
+
+            trendingPosts.add(new TrendingPost(
+                    post.get(),
+                    user.get(),
+                    (new ArrayList<>(Collections.singletonList("Other"))),
+                    ((Number) result[2]).intValue(),
+                    ((Number) result[3]).intValue(),
+                    ((Number) result[4]).intValue()
+            ));
+        }
+
+        return trendingPosts;
     }
 }

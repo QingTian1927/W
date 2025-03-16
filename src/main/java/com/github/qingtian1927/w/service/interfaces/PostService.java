@@ -15,6 +15,7 @@ public interface PostService {
     List<Post> findAllByOrderByCreatedDateDesc();
     List<Post> findAllByOrderByCreatedDateAsc();
     List<Post> listRecentPosts();
+    List<Post> findAll();
     Post save(Post post);
     int countByRepost(Post post);
     long count();
