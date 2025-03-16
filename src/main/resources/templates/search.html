@@ -95,7 +95,7 @@
                         <div th:with="profile = ${@profileServiceImpl.findById(result.getUser().getId())}, user = ${result.getUser()}"
                              class="w-full flex justify-start items-center gap-3">
                             <a th:href="@{/users/{id}(id = ${user.getId()})}"
-                               class="aspect-square w-10 h-full flex justify-center items-center gap-3 rounded-full bg-dark">
+                               class="aspect-square w-10 flex justify-center items-center gap-3 rounded-full bg-dark">
                                 <svg th:if="${profile.isPresent() && profile.get().getAvatar() == null}"
                                      xmlns="http://www.w3.org/2000/svg"
                                      class="bi bi-person-fill fill-lighter size-[1.25em]"
@@ -104,7 +104,7 @@
                                 </svg>
 
                                 <img th:if="${profile.isPresent() && profile.get().getAvatar() != null}"
-                                     class=""
+                                     class="size-full rounded-full object-fit object-center"
                                      th:src="@{/users/{id}/avatar(id = ${user.getId()})}"
                                      th:alt="${user.getDisplayName() + ' avatar image'}"/>
                             </a>

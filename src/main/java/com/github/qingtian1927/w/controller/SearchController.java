@@ -32,12 +32,8 @@ public class SearchController {
         }
 
         List<Searchable> resultList = searchService.search(searchQuery);
-        System.out.println(searchQuery);
-        for (Searchable searchable : resultList) {
-            System.out.println(searchable);
-        }
-
         model.addAttribute("results", resultList);
+
         return "search";
     }
 }
