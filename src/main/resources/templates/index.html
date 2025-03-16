@@ -22,11 +22,11 @@
                 <h2 class="w-full font-bold text-3xl">Trending posts</h2>
 
                 <div class="w-full flex flex-col justify-start items-center gap-3">
-                    <th:block th:if="${trendingPosts != null}"
+                    <th:block th:if="${trendingPosts != null && !trendingPosts.isEmpty()}"
                               th:each="trendingPost, trendingPostStat : ${trendingPosts}">
                         <a th:href="@{/post/{id}(id = ${trendingPost.getPost().getId()})}" class="w-full">
                             <div class="w-full max-w-full mb-1 font-semibold text-lg text-darker">
-                                <span th:text="${trendingPostStat.count + '. ' + trendingPost.getTopics().get(0)}"
+                                <span th:text="${trendingPostStat.count + '. ' + ((trendingPost.getTopics().size() > 0) ? trendingPost.getTopics().get(0) : 'Other')}"
                                       class=""></span>
                                 <span th:text="${'by ' + trendingPost.getUser().getDisplayName()}" class=""></span>
                             </div>
