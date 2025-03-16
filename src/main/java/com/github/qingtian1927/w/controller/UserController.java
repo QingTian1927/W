@@ -25,15 +25,13 @@ public class UserController {
     private final UserService userService;
     private final ProfileService profileService;
     private final FollowService followService;
-    private final PostService postService;
     private final NotificationService notificationService;
 
     @Autowired
-    public UserController(UserService userService, ProfileService profileService, FollowService followService, PostService postService, NotificationService notificationService) {
+    public UserController(UserService userService, ProfileService profileService, FollowService followService, NotificationService notificationService) {
         this.userService = userService;
         this.profileService = profileService;
         this.followService = followService;
-        this.postService = postService;
         this.notificationService = notificationService;
     }
 

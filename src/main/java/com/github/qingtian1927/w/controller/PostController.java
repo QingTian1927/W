@@ -4,10 +4,8 @@ import com.github.qingtian1927.w.model.*;
 import com.github.qingtian1927.w.model.dto.CommentForm;
 import com.github.qingtian1927.w.model.dto.NotificationForm;
 import com.github.qingtian1927.w.model.dto.PostForm;
-import com.github.qingtian1927.w.service.interfaces.CommentService;
-import com.github.qingtian1927.w.service.interfaces.LikeService;
-import com.github.qingtian1927.w.service.interfaces.NotificationService;
-import com.github.qingtian1927.w.service.interfaces.PostService;
+import com.github.qingtian1927.w.service.interfaces.*;
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.Size;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -22,19 +20,31 @@ import java.util.Optional;
 
 @Controller
 public class PostController {
+    private final UserService userService;
     private final PostService postService;
     private final LikeService likeService;
     private final CommentService commentService;
     private final NotificationService notificationService;
 
     @Autowired
-    public PostController(PostService postService, LikeService likeService, CommentService commentService, NotificationService notificationService) {
+    public PostController(UserService userService, PostService postService, LikeService likeService, CommentService commentService, NotificationService notificationService) {
+        this.userService = userService;
         this.postService = postService;
         this.likeService = likeService;
         this.commentService = commentService;
         this.notificationService = notificationService;
     }
 
+    private User getAuthenticatedUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth instanceof AnonymousAuthenticationToken) {
+            return null;
+        }
+        User user = ((CustomUserDetails) auth.getPrincipal()).getUser();
+        return userService.findById(user.getId()).orElseThrow(null);
+    }
+
+    @Transactional
     @PostMapping("/post/create")
     public String createPost(@ModelAttribute PostForm params, @RequestParam("redirect") String redirectPath, Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -43,7 +53,7 @@ public class PostController {
             return "redirect:/login";
         }
 
-        User user = ((CustomUserDetails) auth.getPrincipal()).getUser();
+        User user = getAuthenticatedUser();
         Post post = params.toPost(user);
         postService.save(post);
 
@@ -67,6 +77,7 @@ public class PostController {
         return "post";
     }
 
+    @Transactional
     @PostMapping("post/{id}/delete")
     public String deletePost(@PathVariable Long id, @RequestParam("redirect") String redirectPath, Model model) {
         Optional<Post> post = postService.findById(id);
@@ -89,6 +100,7 @@ public class PostController {
         return "redirect:" + redirectPath;
     }
 
+    @Transactional
     @PostMapping("/post/{id}/like")
     public String likePost(@PathVariable Long id, @RequestParam("redirect") String redirectPath, Model model) {
         Optional<Post> post = postService.findById(id);
@@ -103,7 +115,7 @@ public class PostController {
             return "redirect:/login";
         }
 
-        User user = ((CustomUserDetails) auth.getPrincipal()).getUser();
+        User user = getAuthenticatedUser();
         Like like = new Like(user, post.get());
         likeService.save(like);
 
@@ -121,6 +133,7 @@ public class PostController {
         return "redirect:" + redirectPath;
     }
 
+    @Transactional
     @PostMapping("/post/{id}/unlike")
     public String unlikePost(@PathVariable Long id, @RequestParam("redirect") String redirectPath, Model model) {
         Optional<Post> post = postService.findById(id);
@@ -135,7 +148,7 @@ public class PostController {
             return "redirect:/login";
         }
 
-        User user = ((CustomUserDetails) auth.getPrincipal()).getUser();
+        User user = getAuthenticatedUser();
         likeService.deleteById(user, post.get());
 
         if (redirectPath == null || redirectPath.isEmpty()) {
@@ -144,6 +157,7 @@ public class PostController {
         return "redirect:" + redirectPath;
     }
 
+    @Transactional
     @PostMapping("/post/{id}/repost")
     public String repost(@PathVariable Long id, @RequestParam("redirect") String redirectPath, Model model) {
         Optional<Post> post = postService.findById(id);
@@ -158,7 +172,7 @@ public class PostController {
             return "redirect:/login";
         }
 
-        User user = ((CustomUserDetails) auth.getPrincipal()).getUser();
+        User user = getAuthenticatedUser();
         Post repost = new Post(post.get(), user);
         postService.save(repost);
 
@@ -176,6 +190,7 @@ public class PostController {
         return "redirect:" + redirectPath;
     }
 
+    @Transactional
     @PostMapping("/post/{id}/comment")
     public String comment(@PathVariable Long id, @ModelAttribute CommentForm params, Model model) {
         Optional<Post> post = postService.findById(id);
@@ -190,7 +205,7 @@ public class PostController {
             return "redirect:/login";
         }
 
-        User user = ((CustomUserDetails) auth.getPrincipal()).getUser();
+        User user = getAuthenticatedUser();
         Comment comment = new Comment(user, post.get(), params.getContent());
 
         Notification notification = NotificationService.buildNotification(
@@ -205,8 +220,9 @@ public class PostController {
         return "redirect:/post/" + id;
     }
 
+    @Transactional
     @PostMapping("/comment/{id}/reply")
-    public String reply(@PathVariable Long id, @RequestParam("reply-content") @Size(min = 1, max = 300) String replyContent, Model model) {
+    public String reply(@PathVariable Long id, @RequestParam("reply-content") @Size(min = 1, max = 1024) String replyContent, Model model) {
         Optional<Comment> comment = commentService.findById(id);
 
         if (comment.isEmpty()) {
@@ -225,13 +241,14 @@ public class PostController {
             return "redirect:/login";
         }
 
-        User user = ((CustomUserDetails) auth.getPrincipal()).getUser();
+        User user = getAuthenticatedUser();
         Comment reply = new Comment(user, post, replyContent, comment.get());
         commentService.save(reply);
 
         return "redirect:/post/" + post.getId();
     }
 
+    @Transactional
     @PostMapping("/comment/{id}/like")
     public String likeComment(@PathVariable Long id, Model model) {
         Optional<Comment> comment = commentService.findById(id);
@@ -252,12 +269,13 @@ public class PostController {
             return "redirect:/login";
         }
 
-        User user = ((CustomUserDetails) auth.getPrincipal()).getUser();
+        User user = getAuthenticatedUser();
         this.commentService.like(user, comment.get());
 
         return "redirect:/post/" + post.getId();
     }
 
+    @Transactional
     @PostMapping("/comment/{id}/unlike")
     public String unlikeComment(@PathVariable Long id, Model model) {
         Optional<Comment> comment = commentService.findById(id);
@@ -278,12 +296,13 @@ public class PostController {
             return "redirect:/login";
         }
 
-        User user = ((CustomUserDetails) auth.getPrincipal()).getUser();
+        User user = getAuthenticatedUser();
         this.commentService.unlike(user, comment.get());
 
         return "redirect:/post/" + post.getId();
     }
 
+    @Transactional
     @PostMapping("/comment/{id}/delete")
     public String deleteComment(@PathVariable Long id, @RequestParam("redirect") String redirectPath, Model model) {
         Optional<Comment> comment = commentService.findById(id);

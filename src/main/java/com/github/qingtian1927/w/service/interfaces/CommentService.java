@@ -13,6 +13,8 @@ import java.util.Optional;
 public interface CommentService {
     Optional<Comment> findById(Long id);
     List<Comment> findByUser(User user);
+    List<Comment> findByReplyTo(Comment replyTo);
+    List<Comment> findByPost(Post post);
     List<Comment> listPostCommentDateAsc(Post post);
     List<Comment> listPostCommentDateDesc(Post post);
     List<Comment> listCommentReplyDateDesc(Comment comment);

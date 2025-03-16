@@ -35,6 +35,16 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    public List<Comment> findByReplyTo(Comment replyTo) {
+        return this.commentRepository.findByReplyTo(replyTo);
+    }
+
+    @Override
+    public List<Comment> findByPost(Post post) {
+        return this.commentRepository.findByPost(post);
+    }
+
+    @Override
     public List<Comment> listPostCommentDateAsc(Post post) {
         return this.commentRepository.findCommentByPostAndReplyToIsNullOrderByCreatedDateAsc(post);
     }
@@ -103,14 +113,32 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public void deleteById(Long id) {
         Optional<Comment> comment = this.commentRepository.findById(id);
+
         if (comment.isPresent()) {
-            this.commentRepository.deleteByReplyTo(comment.get());
+            for (Comment reply : this.findByReplyTo(comment.get())) {
+                this.commentLikeRepository.deleteByComment(reply);
+                this.commentRepository.deleteById(reply.getId());
+            }
+            this.commentLikeRepository.deleteByComment(comment.get());
             this.commentRepository.deleteById(comment.get().getId());
         }
     }
 
     @Override
+    @Transactional
     public void deleteByPost(Post post) {
-        this.commentRepository.deleteByPost(post);
+        for (Comment comment : this.commentRepository.findByPost(post)) {
+            this.commentLikeRepository.deleteByComment(comment);
+            this.commentLikeRepository.flush();
+
+            List<Comment> replies = this.findByReplyTo(comment);
+            for (Comment reply : replies) {
+                this.commentLikeRepository.deleteByComment(reply);
+                this.commentLikeRepository.flush();
+                this.commentRepository.deleteById(reply.getId());
+            }
+
+            this.commentRepository.deleteById(comment.getId());
+        }
     }
 }

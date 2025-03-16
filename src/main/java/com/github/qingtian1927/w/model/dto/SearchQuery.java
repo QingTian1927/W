@@ -4,8 +4,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class SearchQuery {
+public class SearchQuery implements Serializable {
     public static final String FILTER_POSTS = "posts";
     public static final String FILTER_COMMENTS = "comments";
     public static final String FILTER_USERS = "users";

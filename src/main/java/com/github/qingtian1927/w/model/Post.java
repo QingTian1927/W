@@ -21,11 +21,11 @@ public class Post implements Searchable {
     @Column(name = "content", length = 1024, columnDefinition = "NVARCHAR(MAX)")
     private String content;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", nullable = true)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "repost_source_id")
     private Post repost;
 
