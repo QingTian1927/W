@@ -1,4 +1,4 @@
-<div th:fragment="pagination_bar (link, page, pageNumber)" class="grow w-full flex justify-center items-end gap-3">
+<div th:fragment="pagination_bar (link, page, pageNumber)" class="w-full flex justify-center items-end gap-3">
     <a th:href="@{{link}/1(link = ${link})}"
        class="aspect-square h-8 p-1 flex justify-center items-center rounded-md btn-pagination"
        th:classappend="${(pageNumber > 1) ? 'visible' : 'invisible'}">
