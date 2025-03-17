@@ -1,9 +1,7 @@
 package com.github.qingtian1927.w.config;
 
 import com.github.qingtian1927.w.security.CaptchaAuthenticationFilter;
-import com.github.qingtian1927.w.security.IndexPageRequestMatcher;
 import com.github.qingtian1927.w.service.implementations.CustomUserDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -63,10 +61,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain SecurityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers(new IndexPageRequestMatcher()).permitAll()
                 .requestMatchers(
-                        "/", "/actuator/**", "/signup", "/login", "/css/**", "/users/**", "/post/**",
-                        "/comment/**", "/search/**", "/forgot-password", "/reset-password/**", "/explore/**"
+                        "/", "/index/**", "/actuator/**", "/signup", "/login", "/css/**", "/users/**", "/post/**",
+                        "/comment/**", "/search/**", "/forgot-password", "/reset-password/**", "/explore/**",
+                        "/notification/**"
                 ).permitAll()
                 .requestMatchers("/admin/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated()

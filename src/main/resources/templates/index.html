@@ -131,10 +131,12 @@
                 <th:block th:if="${posts != null && !posts.isEmpty()}" th:each="post : ${posts}">
                     <th:block th:insert="~{fragments/post :: post (post = ${post})}"></th:block>
                 </th:block>
+
+                <p th:text="${posts}"></p>
             </div>
 
             <th:block
-                    th:insert="~{fragments/pagination_bar :: pagination_bar (link = ${''}, page = ${page}, pageNumber = ${pageNumber})}"></th:block>
+                    th:insert="~{fragments/pagination_bar :: pagination_bar (link = ${'/index'}, page = ${page}, pageNumber = ${pageNumber})}"></th:block>
         </div>
     </div>
 

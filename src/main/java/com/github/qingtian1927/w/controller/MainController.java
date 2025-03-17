@@ -33,10 +33,10 @@ public class MainController {
 
     @GetMapping(value = {"/", "/index"})
     public String indexRedirect() {
-        return "redirect:/1";
+        return "redirect:/index/1";
     }
 
-    @GetMapping(value = {"/{page}", "/index/{page}"})
+    @GetMapping(value = {"/index/{page}"})
     public String index(Model model, @PathVariable("page") int page) {
         if (page - 1 < 0) {
             model.addAttribute("error", "Invalid page number");

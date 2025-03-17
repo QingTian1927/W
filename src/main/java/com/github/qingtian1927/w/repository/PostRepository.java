@@ -20,6 +20,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     int countByRepost(Post post);
     List<Post> findTop10ByOrderByCreatedDateDesc();
 
-    @Query("SELECT p FROM Post p JOIN Follow f ON p.user = f.followed AND f.follower = :follower OR p.user = :follower")
+    @Query("SELECT DISTINCT p FROM Post p LEFT JOIN Follow f ON p.user = f.followed WHERE f.follower = :follower OR p.user = :follower")
     Page<Post> findAllFromFollowed(Pageable pageable, @Param("follower") User follower);
 }

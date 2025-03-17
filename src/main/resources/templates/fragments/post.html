@@ -26,7 +26,8 @@
             <p class="text-lg font-semibold text-dark" th:text="${post.getUser().getDisplayName()}">Display
                 Name</p>
             <p class="text-sm text-dark-faded">
-                <time th:datetime="${post.getCreatedDate()}" th:text="${post.getCreatedDate().toLocaleString()}">2025-01-01
+                <time th:datetime="${post.getCreatedDate()}" th:text="${post.getCreatedDate().toLocaleString()}">
+                    2025-01-01
                 </time>
             </p>
         </div>
@@ -43,10 +44,14 @@
         </th:block>
 
         <form class="self-stretch mt-3 md:mt-6 mb-0 flex justify-between items-center gap-3"
-              th:action="@{/post/{id}(id = ${post.getId()})}" method="POST">
+              th:action="@{/post/{id}(id = ${post.getId()})}">
             <input type="hidden" name="redirect" th:value="@{/}"/>
+            <input type="hidden"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}" />
 
             <button type="submit"
+                    th:formmethod="POST"
                     th:with="action = ${(#authentication.principal == 'anonymousUser' || @likeServiceImpl.findById(#authentication.getPrincipal().getUser().getId(), post.getId()).isEmpty()) ? 'like' : 'unlike'}"
                     th:formaction="@{/post/{id}/{action}(id = ${post.getId()}, action = ${action})}"
                     class="min-w-10 min-h-10 p-3 flex justify-center items-center gap-3 rounded-lg btn-post-like">
@@ -66,6 +71,7 @@
             </button>
 
             <button type="submit" th:formaction="@{/post/{id}/repost(id = ${post.getId()})}"
+                    th:formmethod="POST"
                     class="min-w-10 min-h-10 p-3 flex justify-center items-center gap-3 rounded-lg btn-post-share">
                 <svg xmlns="http://www.w3.org/2000/svg"
                      class="bi bi-share-fill fill-dark size-[1.25em]" viewBox="0 0 16 16">
