@@ -58,6 +58,7 @@ public class PostController {
 
         User user = getAuthenticatedUser();
         Post post = params.toPost(user);
+        post.setTopics(keywordService.findMainTopics(post.getContent()));
         postService.save(post);
 
         if (redirectPath == null || redirectPath.isEmpty()) {

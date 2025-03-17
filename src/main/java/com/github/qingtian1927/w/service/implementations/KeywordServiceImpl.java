@@ -45,8 +45,7 @@ public class KeywordServiceImpl implements KeywordService {
     }
 
     public List<SimilarPost> findSimilarPosts(Post originalPost) {
-        String content = originalPost.getContent();
-        List<String> topics = findMainTopics(content);
+        List<String> topics = originalPost.getTopics();
 
         if (topics.isEmpty()) {
             return Collections.emptyList();
@@ -62,7 +61,7 @@ public class KeywordServiceImpl implements KeywordService {
         return allPosts.stream()
                 .filter(post -> !post.getId().equals(originalPost.getId()))
                 .map(post -> {
-                    List<String> postTopics = findMainTopics(post.getContent());
+                    List<String> postTopics = post.getTopics();
                     return new SimilarPost(post, post.getUser(), postTopics);
                 })
                 .filter(similarPost -> !Collections.disjoint(topics, similarPost.getTopics())

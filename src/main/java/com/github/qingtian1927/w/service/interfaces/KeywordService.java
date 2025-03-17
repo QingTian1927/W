@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface KeywordService {
     int MAIN_TOPIC_SIZE = 3;
-    int SIMILAR_POST_SIZE = 10;
+    int SIMILAR_POST_SIZE = 3;
 
     List<String> findMainTopics(String content);
-    List<SimilarPost> findSimilarPosts(Post post);
+    List<SimilarPost> findSimilarPosts(Post originalPost);
 }

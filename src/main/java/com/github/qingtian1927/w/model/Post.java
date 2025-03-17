@@ -6,7 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "posts")
@@ -20,6 +22,11 @@ public class Post implements Searchable {
 
     @Column(name = "content", length = 1024, columnDefinition = "NVARCHAR(MAX)")
     private String content;
+
+    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "post_topics", joinColumns = @JoinColumn(name = "post_id"))
+    @Column(name = "topic", nullable = false, columnDefinition = "NVARCHAR(128)")
+    private List<String> topics = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
