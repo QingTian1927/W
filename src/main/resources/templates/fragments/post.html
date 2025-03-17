@@ -47,8 +47,8 @@
               th:action="@{/post/{id}(id = ${post.getId()})}">
             <input type="hidden" name="redirect" th:value="@{/}"/>
             <input type="hidden"
-                   th:name="${_csrf.parameterName}"
-                   th:value="${_csrf.token}" />
+                   th:name="${_csrf.getParameterName()}"
+                   th:value="${_csrf.getToken()}" />
 
             <button type="submit"
                     th:formmethod="POST"
