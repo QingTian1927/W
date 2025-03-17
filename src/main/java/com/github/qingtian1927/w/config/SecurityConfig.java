@@ -3,6 +3,7 @@ package com.github.qingtian1927.w.config;
 import com.github.qingtian1927.w.security.CaptchaAuthenticationFilter;
 import com.github.qingtian1927.w.security.IndexPageRequestMatcher;
 import com.github.qingtian1927.w.service.implementations.CustomUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,10 +17,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.rememberme.*;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    private static final String REMEMBER_ME_KEY = "my-unsecure-remember-me-key";
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -29,6 +32,14 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public PersistentTokenBasedRememberMeServices persistentTokenBasedRememberMeServices() {
+        PersistentTokenBasedRememberMeServices service = new PersistentTokenBasedRememberMeServices(REMEMBER_ME_KEY, userDetailsService(), new InMemoryTokenRepositoryImpl());
+        service.setCookieName("remember-me");
+        service.setTokenValiditySeconds(86400);
+        return service;
     }
 
     @Bean
@@ -45,6 +56,7 @@ public class SecurityConfig {
         CaptchaAuthenticationFilter filter = new CaptchaAuthenticationFilter();
         filter.setAuthenticationManager(authenticationManager);
         filter.setFilterProcessesUrl("/users/auth");
+        filter.setRememberMeServices(persistentTokenBasedRememberMeServices());
         return filter;
     }
 
@@ -65,13 +77,13 @@ public class SecurityConfig {
                 .failureUrl("/login?error=true")
                 .defaultSuccessUrl("/")
                 .permitAll()
+
+        ).rememberMe(remember -> remember
+                .rememberMeServices(persistentTokenBasedRememberMeServices())
         ).logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout=true")
                 .permitAll()
-        ).rememberMe(remember -> remember
-                .rememberMeParameter("remember-me")
-                .tokenValiditySeconds(86400)
         ).sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 .maximumSessions(1)
