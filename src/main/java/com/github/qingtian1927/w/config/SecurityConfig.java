@@ -66,7 +66,7 @@ public class SecurityConfig {
                 .requestMatchers(new IndexPageRequestMatcher()).permitAll()
                 .requestMatchers(
                         "/", "/actuator/**", "/signup", "/login", "/css/**", "/users/**", "/post/**",
-                        "/comment/**", "/search/**", "/forgot-password", "/reset-password/**"
+                        "/comment/**", "/search/**", "/forgot-password", "/reset-password/**", "/explore/**"
                 ).permitAll()
                 .requestMatchers("/admin/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated()

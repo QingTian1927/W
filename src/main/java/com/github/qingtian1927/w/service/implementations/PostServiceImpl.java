@@ -86,6 +86,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public Page<Post> findAllFromFollowed(Pageable pageable, User follower) {
+        return postRepository.findAllFromFollowed(pageable, follower);
+    }
+
+    @Override
     @Transactional
     public void deleteById(Long id) {
         Optional<Post> post = postRepository.findById(id);

@@ -46,6 +46,10 @@
     color: var(--lightgreen);
 }
 
+.text-darker-faded-white {
+    color: var(--darkerfadedwhite)
+}
+
 .bg-dark {
     background-color: var(--darkgreen);
 }

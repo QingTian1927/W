@@ -20,5 +20,6 @@ public interface PostService {
     int countByRepost(Post post);
     long count();
     Page<Post> findAll(Pageable pageable);
+    Page<Post> findAllFromFollowed(Pageable pageable, User follower);
     void deleteById(Long id);
 }

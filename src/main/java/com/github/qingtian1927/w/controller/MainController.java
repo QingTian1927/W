@@ -38,11 +38,44 @@ public class MainController {
 
     @GetMapping(value = {"/{page}", "/index/{page}"})
     public String index(Model model, @PathVariable("page") int page) {
-        model.addAttribute("page", postService.findAllByOrderByCreatedDateDesc(PageRequest.of(page - 1, PAGE_SIZE)));
+        if (page - 1 < 0) {
+            model.addAttribute("error", "Invalid page number");
+            return "redirect:/error";
+        }
+
         model.addAttribute("pageNumber", page);
         model.addAttribute("trendingPosts", statisticsService.getWeeklyTrendingPosts(5));
         model.addAttribute("trendingUsers", statisticsService.getWeeklyTrendingUsers(5));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
+            model.addAttribute("page", postService.findAllFromFollowed(PageRequest.of(page - 1, PAGE_SIZE), user));
+        } else {
+            model.addAttribute("page", postService.findAllByOrderByCreatedDateDesc(PageRequest.of(page - 1, PAGE_SIZE)));
+        }
+
         return "index";
+    }
+
+    @GetMapping(value = {"/explore"})
+    public String exploreRedirect() {
+        return "redirect:/explore/1";
+    }
+
+    @GetMapping(value = {"/explore/{page}"})
+    public String explore(Model model, @PathVariable("page") int page) {
+        if (page - 1 < 0) {
+            model.addAttribute("error", "Invalid page number");
+            return "redirect:/error";
+        }
+
+        model.addAttribute("pageNumber", page);
+        model.addAttribute("trendingPosts", statisticsService.getWeeklyTrendingPosts(5));
+        model.addAttribute("trendingUsers", statisticsService.getWeeklyTrendingUsers(5));
+        model.addAttribute("page", postService.findAllByOrderByCreatedDateDesc(PageRequest.of(page - 1, PAGE_SIZE)));
+
+        return "explore";
     }
 
     @GetMapping(value = {"/login"})
