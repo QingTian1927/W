@@ -14,7 +14,7 @@ import java.util.Date;
 @Table(name = "comments")
 @Data
 @NoArgsConstructor
-public class Comment implements Searchable {
+public class Comment implements Searchable, Bookmarkable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

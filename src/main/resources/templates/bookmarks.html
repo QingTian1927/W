@@ -77,7 +77,7 @@
                             </button>
                         </form>
 
-                        <a th:href="@{/{action}/{id}(action = ${bookmark.getType()}, id = ${bookmark.getReferenceId()})}"
+                        <a th:href="@{/post/{id}(id = ${(bookmark.getType().equals(bookmark.TYPE_POST)) ? bookmark.getReferenceId() : bookmark.getReferenceObject().getPost().getId()})}"
                            class="group aspect-square min-h-10 p-3 flex justify-center items-center rounded-lg btn-light"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg"
