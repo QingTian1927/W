@@ -24,10 +24,10 @@ public class NotificationController {
         this.notificationService = notificationService;
     }
 
-    @PostMapping(value = {"/notification/read/{id}"})
+    @PostMapping(value = {"/notification/{id}/read"})
     public String markAsRead(@PathVariable("id") Long id, Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+        if (authentication instanceof AnonymousAuthenticationToken) {
             return "redirect:/login";
         }
 
@@ -46,6 +46,57 @@ public class NotificationController {
 
         notification.get().setIsRead(Boolean.TRUE);
         notificationService.save(notification.get());
+
+        return "redirect:/notifications";
+    }
+
+    @PostMapping(value = {"/notification/{id}/unread"})
+    public String markAsUnread(@PathVariable("id") Long id, Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof AnonymousAuthenticationToken) {
+            return "redirect:/login";
+        }
+
+        Optional<Notification> notification = notificationService.findById(id);
+        User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
+
+        if (notification.isEmpty()) {
+            model.addAttribute("error", "Notification not found");
+            return "redirect:/error";
+        }
+
+        if (!notification.get().getToUser().getId().equals(user.getId())) {
+            model.addAttribute("error", "Mismatching user. Request denied");
+            return "redirect:/error";
+        }
+
+        notification.get().setIsRead(Boolean.FALSE);
+        notificationService.save(notification.get());
+
+        return "redirect:/notifications";
+    }
+
+    @PostMapping(value = {"/notification/{id}/delete"})
+    public String delete(@PathVariable("id") Long id, Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof AnonymousAuthenticationToken) {
+            return "redirect:/login";
+        }
+
+        Optional<Notification> notification = notificationService.findById(id);
+        User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
+
+        if (notification.isEmpty()) {
+            model.addAttribute("error", "Notification not found");
+            return "redirect:/error";
+        }
+
+        if (!notification.get().getToUser().getId().equals(user.getId())) {
+            model.addAttribute("error", "Mismatching user. Request denied");
+            return "redirect:/error";
+        }
+
+        notificationService.deleteById(notification.get().getId());
 
         return "redirect:/notifications";
     }

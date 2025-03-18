@@ -48,7 +48,7 @@
             <input type="hidden" name="redirect" th:value="@{/}"/>
             <input type="hidden"
                    th:name="${_csrf.getParameterName()}"
-                   th:value="${_csrf.getToken()}" />
+                   th:value="${_csrf.getToken()}"/>
 
             <button type="submit"
                     th:formmethod="POST"
@@ -89,13 +89,81 @@
                 <span th:text="${@commentRepository.countByPost(post)}">0</span>
             </a>
 
-            <button type="button"
-                    class="min-w-10 min-h-10 p-3 flex justify-center items-center rounded-lg btn-light">
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     class="bi bi-three-dots fill-dark size-[1.25em]" viewBox="0 0 16 16">
-                    <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
-                </svg>
-            </button>
+            <div class="relative">
+                <button type="button" th:id="${'options-button-' + post.getId()}"
+                        class="min-w-10 min-h-10 p-3 flex justify-center items-center rounded-lg btn-light">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="bi bi-three-dots fill-dark size-[1.25em]" viewBox="0 0 16 16">
+                        <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
+                    </svg>
+                </button>
+
+                <div th:id="${'options-popover-' + post.getId()}"
+                     class="absolute z-10 hidden w-max p-3 rounded-lg shadow-lg text-darker bg-lighter border-2 border-dark">
+                    <div class="flex flex-col gap-3">
+                        <div th:if="${#authentication.principal == 'anonymousUser' || !@bookmarkServiceImpl.exists(@bookmarkController.getAuthenticatedUser(), 'post', post.getId())}"
+                             class="h-12 w-full p-1 m-0 flex items-center"
+                        >
+                            <input type="hidden" value="redirect" th:value="@{/}">
+                            <button type="submit"
+                                    th:formaction="@{/bookmark/post/{id}(id = ${post.getId()})}" formmethod="POST"
+                                    class="flex justify-start items-center gap-3 rounded-lg font-medium text-dark">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                     class="bi bi-bookmark aspect-square h-6 " viewBox="0 0 16 16">
+                                    <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z"/>
+                                </svg>
+                                <span>Create Bookmark</span>
+                            </button>
+                        </div>
+
+                        <div th:if="${#authentication.principal != 'anonymousUser' && @bookmarkServiceImpl.exists(@bookmarkController.getAuthenticatedUser(), 'post', post.getId())}"
+                             class="h-12 w-full p-1 m-0 flex items-center">
+                            <th:block th:with="bookmark = ${@bookmarkServiceImpl.findByContent(#authentication.getPrincipal().getUser(), 'post', post.getId()).get()}">
+                                <input type="hidden" value="redirect" th:value="@{/}">
+                                <button type="submit"
+                                        th:formaction="@{/bookmark/delete/{id}(id = ${bookmark.getId()})}"
+                                        formmethod="POST"
+                                        class="flex justify-start items-center gap-3 rounded-lg font-medium text-dark">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                         class="bi bi-bookmark-fill aspect-square h-6" viewBox="0 0 16 16">
+                                        <path d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2"/>
+                                    </svg>
+                                    <span>Remove Bookmark</span>
+                                </button>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+
+                <script th:inline="javascript">
+                    /*<![CDATA[*/
+                    document.addEventListener("DOMContentLoaded", () => {
+                        const button = document.getElementById("options-button-" + [[${post.getId()}]]);
+                        const popover = document.getElementById("options-popover-" + [[${post.getId()}]]);
+                        const buttonRect = button.getBoundingClientRect();
+
+                        popover.style.top = `${buttonRect.bottom - buttonRect.top - 135}px`
+                        popover.style.left = `${buttonRect.left - buttonRect.right - 115}px`
+                    })
+
+                    document.getElementById("options-button-" + [[${post.getId()}]]).addEventListener("click", () => {
+                        const popOver = document.getElementById("options-popover-" + [[${post.getId()}]]);
+                        const settingsBtn = document.getElementById("options-button-" + [[${post.getId()}]]);
+                        let isToggled = !popOver.classList.contains("hidden");
+
+                        if (isToggled) {
+                            popOver.classList.add("hidden");
+                            settingsBtn.classList.add("btn-light");
+                            settingsBtn.classList.remove("btn-options-highlighted");
+                        } else if (!isToggled) {
+                            popOver.classList.remove("hidden");
+                            settingsBtn.classList.remove("btn-light");
+                            settingsBtn.classList.add("btn-options-highlighted");
+                        }
+                    })
+                    /*]]>*/
+                </script>
+            </div>
         </form>
     </div>
 </article>

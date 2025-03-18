@@ -16,11 +16,20 @@
     <div class="grow min-h-full size-full p-6 rounded-lg shadow-md md:shadow-lg bg-lighter text-dark">
         <th:block th:insert="~{fragments/viewfeed_header}"></th:block>
 
-        <div th:if="${notifications != null}"
+        <div th:if="${notifications == null || notifications.isEmpty()}"
+             class="min-h-[90svh] size-full flex flex-col justify-center items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-app-indicator aspect-square fill-lightgreen size-[5em]" viewBox="0 0 16 16">
+                <path d="M5.5 2A3.5 3.5 0 0 0 2 5.5v5A3.5 3.5 0 0 0 5.5 14h5a3.5 3.5 0 0 0 3.5-3.5V8a.5.5 0 0 1 1 0v2.5a4.5 4.5 0 0 1-4.5 4.5h-5A4.5 4.5 0 0 1 1 10.5v-5A4.5 4.5 0 0 1 5.5 1H8a.5.5 0 0 1 0 1z"/>
+                <path d="M16 3a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+            </svg>
+            <p class="font-medium text-lg text-lightgreen">You haven't received any notifications yet</p>
+        </div>
+
+        <div th:if="${notifications != null && !notifications.isEmpty()}"
              class="size-full mt-3 md:mt-0 flex flex-col justify-start items-center gap-6">
             <article th:each="notification : ${notifications}"
                      th:with="ADMIN = ${notification.ADMIN}, GENERAL = ${notification.GENERAL}, type = ${notification.getType()}"
-                     class="min-h-14 w-full p-3 md:p-6 flex flex-wrap gap-3 md:gap-6 rounded-lg border-2 border-light">
+                     class="min-h-14 w-full p-3 md:p-6 flex flex-wrap gap-3 rounded-lg border-2 border-light">
                 <div class="aspect-square min-h-14 flex justify-center items-center">
                     <a th:if="${type != ADMIN && type != GENERAL}"
                        th:with="fromProfile = ${@profileServiceImpl.findById(notification.getFromUser().getId())}, fromUser = ${notification.getFromUser()}"
@@ -116,8 +125,10 @@
                 </div>
 
                 <form th:if="${!notification.getIsRead()}"
-                      th:form="@{/notification/{id}/read(id = ${notification.getId()})}" class="min-w-10 min-h-14 mb-0 flex justify-center items-center">
-                    <button type="submit" class="aspect-square w-full p-1 flex justify-center items-center rounded-lg btn-pagination">
+                      th:action="@{/notification/{id}/read(id = ${notification.getId()})}" method="POST"
+                      class="min-w-10 min-h-14 mb-0 flex justify-center items-center">
+                    <button type="submit"
+                            class="aspect-square w-full p-1 flex justify-center items-center rounded-lg btn-pagination">
                         <svg xmlns="http://www.w3.org/2000/svg"
                              class="bi bi-envelope-open size-[1.5em]" viewBox="0 0 16 16">
                             <path d="M8.47 1.318a1 1 0 0 0-.94 0l-6 3.2A1 1 0 0 0 1 5.4v.817l5.75 3.45L8 8.917l1.25.75L15 6.217V5.4a1 1 0 0 0-.53-.882zM15 7.383l-4.778 2.867L15 13.117zm-.035 6.88L8 10.082l-6.965 4.18A1 1 0 0 0 2 15h12a1 1 0 0 0 .965-.738ZM1 13.116l4.778-2.867L1 7.383v5.734ZM7.059.435a2 2 0 0 1 1.882 0l6 3.2A2 2 0 0 1 16 5.4V14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V5.4a2 2 0 0 1 1.059-1.765z"/>
@@ -126,8 +137,10 @@
                 </form>
 
                 <form th:if="${notification.getIsRead()}"
-                      th:form="@{/notification/{id}/unread(id = ${notification.getId()})}" class="min-w-10 min-h-14 mb-0 flex justify-center items-center">
-                    <button type="submit" class="aspect-square w-full p-1 flex justify-center items-center rounded-lg btn-pagination">
+                      th:action="@{/notification/{id}/unread(id = ${notification.getId()})}" method="POST"
+                      class="min-w-10 min-h-14 mb-0 flex justify-center items-center">
+                    <button type="submit"
+                            class="aspect-square w-full p-1 flex justify-center items-center rounded-lg btn-pagination">
                         <svg xmlns="http://www.w3.org/2000/svg"
                              class="bi bi-envelope size-[1.5em]" viewBox="0 0 16 16">
                             <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/>
@@ -154,6 +167,16 @@
                         </svg>
                     </button>
                 </div>
+
+                <form th:action="@{/notification/{id}/delete(id = ${notification.getId()})}" method="POST"
+                      class="justify-self-end min-w-10 min-h-14 mb-0 flex justify-center items-center gap-3">
+                    <button class="aspect-square w-full p-1 flex justify-center items-center rounded-lg btn-pagination">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             class="bi bi-trash3 size-[1.5em]" viewBox="0 0 16 16">
+                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
+                        </svg>
+                    </button>
+                </form>
 
                 <div th:id="${'notification-content-' + notification.getId()}"
                      th:if="${type == ADMIN || type == GENERAL}"

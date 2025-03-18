@@ -214,6 +214,19 @@
     background-color: var(--purple);
 }
 
+.btn-options-highlighted {
+    color: var(--darkgreen);
+    background-color: var(--fadedwhite);
+}
+
+.btn-options-highlighted svg {
+    filter: invert(26%) sepia(9%) saturate(2109%) hue-rotate(112deg) brightness(88%) contrast(84%);
+}
+
+.btn-options-highlighted:hover svg {
+    filter: invert(15%) sepia(23%) saturate(898%) hue-rotate(112deg) brightness(90%) contrast(88%);
+}
+
 .btn-light-highlighted {
     color: var(--darkgreen);
     background-color: var(--lighterwhite);

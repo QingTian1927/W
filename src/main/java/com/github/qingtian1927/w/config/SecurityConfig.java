@@ -67,35 +67,35 @@ public class SecurityConfig {
     public SecurityFilterChain SecurityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                        "/", "/index/**", "/actuator/**", "/signup", "/login", "/css/**", "/users/**", "/post/**",
-                        "/comment/**", "/search/**", "/forgot-password", "/reset-password/**", "/explore/**",
-                        "/notification/**"
-                ).permitAll()
-                .requestMatchers("/admin/**").hasAuthority("ADMIN")
-                .anyRequest().authenticated()
-        ).formLogin(login -> login
-                .usernameParameter("email")
-                .loginPage("/login")
-                .loginProcessingUrl("/users/auth")
-                .failureUrl("/login?error=true")
-                .defaultSuccessUrl("/")
-                .permitAll()
+                        .requestMatchers(
+                                "/", "/index/**", "/actuator/**", "/signup", "/login", "/css/**", "/users/**", "/post/**",
+                                "/comment/**", "/search/**", "/forgot-password", "/reset-password/**", "/explore/**",
+                                "/notification/**", "/notifications", "/bookmarks", "/bookmark/**"
+                        ).permitAll()
+                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                        .anyRequest().authenticated()
+                ).formLogin(login -> login
+                        .usernameParameter("email")
+                        .loginPage("/login")
+                        .loginProcessingUrl("/users/auth")
+                        .failureUrl("/login?error=true")
+                        .defaultSuccessUrl("/")
+                        .permitAll()
 
-        ).rememberMe(remember -> remember
-                .rememberMeServices(persistentTokenBasedRememberMeServices())
-        ).logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout=true")
-                .deleteCookies("JSESSIONID")
-                .permitAll()
-        ).sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
-                .maximumSessions(1)
-                .expiredUrl("/login?expired=true")
-        ).securityContext(context -> context
-                .requireExplicitSave(false)
-        );
+                ).rememberMe(remember -> remember
+                        .rememberMeServices(persistentTokenBasedRememberMeServices())
+                ).logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout=true")
+                        .deleteCookies("JSESSIONID")
+                        .permitAll()
+                ).sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+                        .maximumSessions(1)
+                        .expiredUrl("/login?expired=true")
+                ).securityContext(context -> context
+                        .requireExplicitSave(false)
+                );
 
         http.addFilterBefore(
                 captchaAuthenticationFilter(authenticationManager(userDetailsService(), passwordEncoder())),

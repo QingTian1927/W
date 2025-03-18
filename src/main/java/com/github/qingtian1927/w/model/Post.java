@@ -14,7 +14,7 @@ import java.util.List;
 @Table(name = "posts")
 @Data
 @NoArgsConstructor
-public class Post implements Searchable {
+public class Post implements Searchable, Bookmarkable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
