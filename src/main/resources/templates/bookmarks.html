@@ -1,0 +1,101 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>W - search.html</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/search_input.css}">
+    <link rel="stylesheet" th:href="@{/css/colors.css}">
+</head>
+<body class="max-w-svw min-h-svh flex justify-end items-start bg-light-faded text-dark">
+<aside class="fixed z-10 bottom-0 left-0 md:top-0 h-[10%] md:h-full w-full md:w-[30%] xl:w-[20%] p-3 flex flex-col justify-center gap-12">
+    <th:block th:insert="~{fragments/sidebar :: sidebar (page = ${'bookmarks'})}"></th:block>
+</aside>
+<main class="min-h-[90%] md:min-h-full w-full md:w-[70%] xl:w-[80%] p-3 pb-0 md:pb-3 flex flex-col justify-center items-center">
+    <div class="grow min-h-full size-full p-6 rounded-lg shadow-md md:shadow-lg bg-lighter text-dark">
+        <th:block th:insert="~{fragments/viewfeed_header}"></th:block>
+
+        <div class="size-full mt-3 md:mt-0 flex flex-col justify-start items-center gap-6">
+            <div th:if="${bookmarks == null || bookmarks.isEmpty()}"
+                 class="min-h-[90svh] size-full flex flex-col justify-center items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-bookmarks fill-lightgreen aspect-square size-[5em]"
+                     viewBox="0 0 16 16">
+                    <path d="M2 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v11.5a.5.5 0 0 1-.777.416L7 13.101l-4.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v10.566l3.723-2.482a.5.5 0 0 1 .554 0L11 14.566V4a1 1 0 0 0-1-1z"/>
+                    <path d="M4.268 1H12a1 1 0 0 1 1 1v11.768l.223.148A.5.5 0 0 0 14 13.5V2a2 2 0 0 0-2-2H6a2 2 0 0 0-1.732 1"/>
+                </svg>
+                <p class="font-medium text-lg text-lightgreen">Bookmark posts or comments to view them here</p>
+            </div>
+
+            <th:block th:if="${bookmarks != null && !bookmarks.isEmpty()}" th:each="bookmark : ${bookmarks}">
+                <article th:with="bookmarkReferenceObject = ${bookmark.getReferenceObject()}"
+                         class="w-full p-3 last:mb-0 flex flex-col justify-start items-start gap-3 rounded-lg shadow-sm border-2 border-light">
+                    <div th:with="profile = ${@profileServiceImpl.findById(bookmarkReferenceObject.getUser().getId())}, user = ${bookmarkReferenceObject.getUser()}"
+                         class="w-full flex justify-start items-center gap-3">
+                        <a th:href="@{/users/{id}(id = ${user.getId()})}"
+                           class="aspect-square w-10 flex justify-center items-center gap-3 rounded-full bg-dark">
+                            <svg th:if="${profile.isPresent() && profile.get().getAvatar() == null}"
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 class="bi bi-person-fill fill-lighter size-[1.25em]"
+                                 viewBox="0 0 16 16">
+                                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                            </svg>
+
+                            <img th:if="${profile.isPresent() && profile.get().getAvatar() != null}"
+                                 class="size-full rounded-full object-fit object-center"
+                                 th:src="@{/users/{id}/avatar(id = ${user.getId()})}"
+                                 th:alt="${user.getDisplayName() + ' avatar image'}"/>
+                        </a>
+
+                        <div class="w-full">
+                            <p>
+                                <span class="font-semibold text-dark" th:text="${user.getDisplayName()}"></span>
+                                <span th:text="${(bookmark.getType().equals(bookmark.TYPE_POST)) ? 'posted' : 'commented'}"
+                                      class="font-base"></span>
+                            </p>
+                            <p class="text-sm text-dark-faded">
+                                <time th:datetime="${bookmarkReferenceObject.getCreatedDate()}"
+                                      th:text="${bookmarkReferenceObject.getCreatedDate().toLocaleString()}">
+                                    2025-01-01
+                                </time>
+                            </p>
+                        </div>
+                    </div>
+
+                    <p class="max-w-full text-justify text-wrap break-words text-dark"
+                       th:utext="${bookmarkReferenceObject.getContent()}"></p>
+
+                    <div class="w-full m-0 flex justify-end items-center gap-3">
+                        <form th:action="@{/bookmark/delete/{id}(id = ${bookmark.getId()})}"
+                              class="mb-0" method="POST">
+                            <button type="submit"
+                                    class="group aspect-square min-h-10 p-3 flex justify-center items-center rounded-lg btn-light">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                     class="bi bi-trash3 fill-dark size-[1.25em]" viewBox="0 0 16 16">
+                                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
+                                </svg>
+                            </button>
+                        </form>
+
+                        <a th:href="@{/{action}/{id}(action = ${bookmark.getType()}, id = ${bookmark.getReferenceId()})}"
+                           class="group aspect-square min-h-10 p-3 flex justify-center items-center rounded-lg btn-light"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 class="bi bi-box-arrow-up-right fill-dark size-[1.25em]" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd"
+                                      d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5"/>
+                                <path fill-rule="evenodd"
+                                      d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </article>
+            </th:block>
+        </div>
+    </div>
+
+    <!--/* mobile layout action menu spacer */-->
+    <div class="block md:hidden h-[10svh] w-full"></div>
+</main>
+</body>
+</html>
