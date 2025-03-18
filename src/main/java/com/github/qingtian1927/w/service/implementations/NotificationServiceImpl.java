@@ -37,6 +37,11 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    public int countUnreadNotification(User user) {
+        return this.notificationRepository.countByToUserAndIsReadFalse(user);
+    }
+
+    @Override
     public void deleteById(Long id) {
         notificationRepository.deleteById(id);
     }

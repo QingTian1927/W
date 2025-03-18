@@ -15,6 +15,8 @@ public interface NotificationService {
 
     Notification save(Notification notification);
 
+    int countUnreadNotification(User user);
+
     void deleteById(Long id);
 
     void deleteByReferencedPost(Post post);

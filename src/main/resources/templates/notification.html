@@ -33,7 +33,7 @@
                 <div class="aspect-square min-h-14 flex justify-center items-center">
                     <a th:if="${type != ADMIN && type != GENERAL}"
                        th:with="fromProfile = ${@profileServiceImpl.findById(notification.getFromUser().getId())}, fromUser = ${notification.getFromUser()}"
-                       class="relative aspect-square h-full flex justify-center items-center rounded-full bg-dark"
+                       class="relative aspect-square h-14 flex justify-center items-center rounded-full bg-dark"
                     >
                         <svg th:if="${fromProfile.isPresent() && fromProfile.get().getAvatar() == null}"
                              xmlns="http://www.w3.org/2000/svg"
@@ -43,7 +43,7 @@
                         </svg>
 
                         <img th:if="${fromProfile.isPresent() && fromProfile.get().getAvatar() != null}"
-                             class=""
+                             class="aspect-square h-full object-cover object-center rounded-full"
                              th:src="@{/users/{id}/avatar(id = ${fromUser.getId()})}"
                              th:alt="${fromUser.getDisplayName() + ' avatar image'}"/>
 

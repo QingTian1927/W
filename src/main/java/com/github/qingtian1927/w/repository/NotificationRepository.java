@@ -11,5 +11,6 @@ import java.util.List;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     List<Notification> findByToUserOrderByCreatedDateDesc(User user);
+    int countByToUserAndIsReadFalse(User user);
     void deleteByReferencedPost(Post referencedPost);
 }
