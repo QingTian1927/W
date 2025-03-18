@@ -90,7 +90,7 @@ public class SecurityConfig {
                 .deleteCookies("JSESSIONID")
                 .permitAll()
         ).sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                 .maximumSessions(1)
                 .expiredUrl("/login?expired=true")
         ).securityContext(context -> context
