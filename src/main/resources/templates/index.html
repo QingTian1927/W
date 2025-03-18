@@ -131,8 +131,6 @@
                 <th:block th:if="${posts != null && !posts.isEmpty()}" th:each="post : ${posts}">
                     <th:block th:insert="~{fragments/post :: post (post = ${post})}"></th:block>
                 </th:block>
-
-                <p th:text="${posts}"></p>
             </div>
 
             <th:block
