@@ -141,7 +141,7 @@
     <div class="block md:hidden h-[10svh] w-full"></div>
 </main>
 
-<div id="user-banner-overlay" class="hidden z-1 fixed size-full">
+<div id="user-banner-overlay" class="hidden z-20 fixed size-full">
     <div class="relative size-full flex justify-center items-center bg-black-transparent">
         <div class="absolute top-3 right-3 flex gap-3">
             <form th:if="${#authentication.principal != 'anonymousUser' && #authentication.getPrincipal().getUsername() == user.getEmail()}"
@@ -172,7 +172,7 @@
     </div>
 </div>
 
-<div id="user-avatar-overlay" class="hidden z-20 fixed size-full">
+<div id="user-avatar-overlay" class="hidden fixed z-20 size-full">
     <div class="relative size-full flex justify-center items-center bg-black-transparent">
         <div class="absolute top-3 right-3 flex gap-3">
             <form th:if="${#authentication.principal != 'anonymousUser' && #authentication.getPrincipal().getUsername() == user.getEmail()}"
