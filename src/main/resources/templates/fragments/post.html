@@ -3,7 +3,7 @@
          class="box-border w-full p-3 md:p-6 flex flex-col gap-3 md:gap-6 rounded-lg shadow-sm border-2 border-light"
 >
     <div th:with="profile = ${@profileServiceImpl.findById(post.getUser().getId())}"
-         class="max-w-full flex flex-wrap gap-3 md:gap-6"
+         class="max-w-full flex flex-wrap gap-3"
     >
         <a th:href="@{/users/{id}(id = ${post.getUser().getId()})}"
            class="aspect-square w-12 rounded-full flex justify-center items-center bg-darker"

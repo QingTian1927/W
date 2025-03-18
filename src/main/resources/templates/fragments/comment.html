@@ -12,7 +12,7 @@
             </svg>
 
             <img th:if="${profile.isPresent() && profile.get().getAvatar() != null}"
-                 class=""
+                 class="size-full object-cover object-center rounded-full"
                  th:src="@{/users/{id}/avatar(id = ${user.getId()})}"
                  th:alt="${user.getDisplayName() + ' avatar image'}"/>
         </a>
