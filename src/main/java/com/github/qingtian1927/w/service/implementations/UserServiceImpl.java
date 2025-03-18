@@ -25,13 +25,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean exists(User user) {
-        return this.exists(user.getEmail(), user.getUsername());
+    public boolean existsByUsername(User user) {
+        return this.existsByUsername(user.getEmail(), user.getUsername());
     }
 
     @Override
-    public boolean exists(String email, String username) {
+    public boolean existsByUsername(String email, String username) {
         return userRepository.existsByEmailAndUsername(email, username);
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
     }
 
     @Override
@@ -57,6 +62,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public User save(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User edit(User user) {
         return userRepository.save(user);
     }
 

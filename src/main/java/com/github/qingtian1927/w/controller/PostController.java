@@ -50,13 +50,12 @@ public class PostController {
     @Transactional
     @PostMapping("/post/create")
     public String createPost(@ModelAttribute PostForm params, @RequestParam("redirect") String redirectPath, Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth instanceof AnonymousAuthenticationToken) {
+        User user = getAuthenticatedUser();
+        if (user == null) {
             model.addAttribute("error", "You must login to create posts");
             return "redirect:/login";
         }
 
-        User user = getAuthenticatedUser();
         Post post = params.toPost(user);
         post.setTopics(keywordService.findMainTopics(post.getContent()));
         postService.save(post);
@@ -120,22 +119,21 @@ public class PostController {
             return "redirect:/error";
         }
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth instanceof AnonymousAuthenticationToken) {
+        User user = getAuthenticatedUser();
+        if (user == null) {
             return "redirect:/login";
         }
 
-        User user = getAuthenticatedUser();
         Like like = new Like(user, post.get());
         likeService.save(like);
 
-        Notification notification = NotificationService.buildNotification(
+        Optional<Notification> notification = NotificationService.buildNotification(
                 NotificationForm.builder().type(Notification.LIKE).build(),
                 post.get().getUser(),
                 Optional.of(user),
                 post
         );
-        notificationService.save(notification);
+        notification.ifPresent(notificationService::save);
 
         if (redirectPath == null || redirectPath.isEmpty()) {
             return "redirect:/";
@@ -177,22 +175,21 @@ public class PostController {
             return "redirect:/error";
         }
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth instanceof AnonymousAuthenticationToken) {
+        User user = getAuthenticatedUser();
+        if (user == null) {
             return "redirect:/login";
         }
 
-        User user = getAuthenticatedUser();
         Post repost = new Post(post.get(), user);
         postService.save(repost);
 
-        Notification notification = NotificationService.buildNotification(
+        Optional<Notification> notification = NotificationService.buildNotification(
                 NotificationForm.builder().type(Notification.REPOST).build(),
                 post.get().getUser(),
                 Optional.of(user),
                 post
         );
-        notificationService.save(notification);
+        notification.ifPresent(notificationService::save);
 
         if (redirectPath == null || redirectPath.isEmpty()) {
             return "redirect:/users/" + user.getId();
@@ -210,21 +207,20 @@ public class PostController {
             return "redirect:/error";
         }
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth instanceof AnonymousAuthenticationToken) {
+        User user = getAuthenticatedUser();
+        if (user == null) {
             return "redirect:/login";
         }
 
-        User user = getAuthenticatedUser();
         Comment comment = new Comment(user, post.get(), params.getContent());
 
-        Notification notification = NotificationService.buildNotification(
+        Optional<Notification> notification = NotificationService.buildNotification(
                 NotificationForm.builder().type(Notification.COMMENT).build(),
                 post.get().getUser(),
                 Optional.of(user),
                 post
         );
-        notificationService.save(notification);
+        notification.ifPresent(notificationService::save);
 
         commentService.save(comment);
         return "redirect:/post/" + id;

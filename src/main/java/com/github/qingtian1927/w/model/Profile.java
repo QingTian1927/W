@@ -18,7 +18,7 @@ public class Profile implements Searchable {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(name = "bio", length = 160)
+    @Column(name = "bio", length = 160, columnDefinition = "NVARCHAR(160)")
     private String bio;
 
     @Lob

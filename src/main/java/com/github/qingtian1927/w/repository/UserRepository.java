@@ -10,6 +10,7 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmailAndUsername(String email, String accountHandle);
+    boolean existsByUsername(String username);
     Optional<User> getByEmail(String email);
     Optional<User> findByEmail(String email);
     List<User> findTop10ByOrderByCreatedDateDesc();

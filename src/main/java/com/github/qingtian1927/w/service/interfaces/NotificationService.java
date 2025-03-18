@@ -21,7 +21,8 @@ public interface NotificationService {
 
     void deleteByReferencedPost(Post post);
 
-    static Notification buildNotification(NotificationForm params, User toUser, Optional<User> fromUser, Optional<Post> referencedPost) {
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    static Optional<Notification> buildNotification(NotificationForm params, User toUser, Optional<User> fromUser, Optional<Post> referencedPost) {
         Notification notification = new Notification();
         notification.setToUser(toUser);
 
@@ -40,6 +41,10 @@ public interface NotificationService {
                     throw new IllegalArgumentException("Sender user not found");
                 }
 
+                if (fromUser.get().equals(toUser)) {
+                    return Optional.empty();
+                }
+
                 notification.setType(params.getType());
                 notification.setFromUser(fromUser.get());
             }
@@ -47,9 +52,12 @@ public interface NotificationService {
                 if (referencedPost.isEmpty()) {
                     throw new IllegalArgumentException("Referenced post not found");
                 }
-
                 if (fromUser.isEmpty()) {
                     throw new IllegalArgumentException("Sender user not found");
+                }
+
+                if (fromUser.get().equals(toUser)) {
+                    return Optional.empty();
                 }
 
                 notification.setType(params.getType());
@@ -62,6 +70,6 @@ public interface NotificationService {
             }
         }
 
-        return notification;
+        return Optional.of(notification);
     }
 }

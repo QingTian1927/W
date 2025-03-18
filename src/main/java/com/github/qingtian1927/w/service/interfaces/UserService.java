@@ -8,13 +8,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
-    boolean exists(User user);
-    boolean exists(String email, String handle);
+    boolean existsByUsername(User user);
+    boolean existsByUsername(String email, String handle);
+    boolean existsByUsername(String username);
     Optional<User> findById(Long id);
     Optional<User> findByEmail(String username);
     List<User> findAll();
     Page<User> findAll(Pageable pageable);
     User save(User user);
+    User edit(User user);
     long count();
     List<User> listRecentUsers();
 }

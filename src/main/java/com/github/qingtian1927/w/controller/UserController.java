@@ -1,6 +1,7 @@
 package com.github.qingtian1927.w.controller;
 
 import com.github.qingtian1927.w.model.*;
+import com.github.qingtian1927.w.model.dto.EditUserForm;
 import com.github.qingtian1927.w.model.dto.NotificationForm;
 import com.github.qingtian1927.w.model.dto.SignUpForm;
 import com.github.qingtian1927.w.service.interfaces.*;
@@ -26,13 +27,24 @@ public class UserController {
     private final ProfileService profileService;
     private final FollowService followService;
     private final NotificationService notificationService;
+    private final PostService postService;
 
     @Autowired
-    public UserController(UserService userService, ProfileService profileService, FollowService followService, NotificationService notificationService) {
+    public UserController(UserService userService, ProfileService profileService, FollowService followService, NotificationService notificationService, PostService postService) {
         this.userService = userService;
         this.profileService = profileService;
         this.followService = followService;
         this.notificationService = notificationService;
+        this.postService = postService;
+    }
+
+    private User getAuthenticatedUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth instanceof AnonymousAuthenticationToken) {
+            return null;
+        }
+        User user = ((CustomUserDetails) auth.getPrincipal()).getUser();
+        return userService.findById(user.getId()).orElseThrow(null);
     }
 
     @GetMapping("/users/{id}")
@@ -43,13 +55,14 @@ public class UserController {
         if (user.isPresent() && profile.isPresent()) {
             model.addAttribute("user", user.get());
             model.addAttribute("profile", profile.get());
+            model.addAttribute("posts", postService.findByUser(user.get()));
         }
         return "profile";
     }
 
     @PostMapping("/users/create")
     public String createUser(@ModelAttribute SignUpForm params, Model model) {
-        if (userService.exists(params.getEmail(), params.getUsername())) {
+        if (userService.existsByUsername(params.getEmail(), params.getUsername())) {
             model.addAttribute("error", "User already exists");
             return "signup";
         }
@@ -64,6 +77,52 @@ public class UserController {
             model.addAttribute("error", e.getMessage());
             return "signup";
         }
+    }
+
+    @PostMapping("/users/{id}/edit")
+    public String editUser(@ModelAttribute EditUserForm params, Model model) {
+        User user = getAuthenticatedUser();
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        Optional<Profile> profile = profileService.findById(user.getId());
+        if (profile.isEmpty()) {
+            profile = Optional.of(new Profile(user));
+        }
+
+        if (params.isContentNull()) {
+            model.addAttribute("error", "Missing parameters");
+            return "redirect:/users/" + user.getId();
+        }
+
+        String username = params.getUsername();
+        String displayName = params.getDisplayName();
+        String bio = params.getBio();
+
+        System.out.println(user);
+
+        if (!username.isEmpty()) {
+            if (userService.existsByUsername(username)) {
+                model.addAttribute("error", "User already exists");
+                model.addAttribute("user", user);
+                model.addAttribute("profile", profile.get());
+            }
+            user.setUsername(username);
+        }
+        if (!displayName.isEmpty()) {
+            user.setDisplayName(displayName);
+        }
+        if (!bio.isEmpty()) {
+            profile.get().setBio(bio);
+        }
+
+        user = userService.edit(user);
+        System.out.println(user);
+
+        profileService.save(profile.get());
+
+        return "redirect:/users/" + user.getId();
     }
 
     @PostMapping("/users/{id}/banner/upload")
@@ -165,13 +224,13 @@ public class UserController {
         }
 
         followService.save(followerUser, followedUser.get());
-        Notification notification = NotificationService.buildNotification(
+        Optional<Notification> notification = NotificationService.buildNotification(
                 NotificationForm.builder().type(Notification.FOLLOW).build(),
                 followedUser.get(),
                 Optional.of(followerUser),
                 Optional.empty()
         );
-        notificationService.save(notification);
+        notification.ifPresent(notificationService::save);
 
         return "redirect:/users/" + id;
     }
@@ -214,9 +273,9 @@ public class UserController {
         }
 
         User fromUser = ((CustomUserDetails) auth.getPrincipal()).getUser();
-        Notification notification = NotificationService.buildNotification(params, toUser.get(), Optional.of(fromUser), Optional.empty());
+        Optional<Notification> notification = NotificationService.buildNotification(params, toUser.get(), Optional.of(fromUser), Optional.empty());
+        notification.ifPresent(notificationService::save);
 
-        notificationService.save(notification);
         if (redirectPath == null || redirectPath.isEmpty()) {
             return "redirect:/";
         }
