@@ -4,6 +4,7 @@ import com.github.qingtian1927.w.model.*;
 import com.github.qingtian1927.w.repository.CommentLikeRepository;
 import com.github.qingtian1927.w.repository.CommentRepository;
 import com.github.qingtian1927.w.service.interfaces.CommentService;
+import com.github.qingtian1927.w.service.interfaces.NotificationService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,11 +18,13 @@ import java.util.Optional;
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final CommentLikeRepository commentLikeRepository;
+    private final NotificationService notificationService;
 
     @Autowired
-    public CommentServiceImpl(CommentRepository commentRepository, CommentLikeRepository commentLikeRepository) {
+    public CommentServiceImpl(CommentRepository commentRepository, CommentLikeRepository commentLikeRepository, NotificationService notificationService) {
         this.commentRepository = commentRepository;
         this.commentLikeRepository = commentLikeRepository;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -117,7 +120,9 @@ public class CommentServiceImpl implements CommentService {
         if (comment.isPresent()) {
             for (Comment reply : this.findByReplyTo(comment.get())) {
                 this.commentLikeRepository.deleteByComment(reply);
+                this.commentLikeRepository.flush();
                 this.commentRepository.deleteById(reply.getId());
+                this.commentRepository.flush();
             }
             this.commentLikeRepository.deleteByComment(comment.get());
             this.commentRepository.deleteById(comment.get().getId());

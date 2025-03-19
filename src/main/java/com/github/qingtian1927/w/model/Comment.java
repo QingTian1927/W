@@ -23,7 +23,7 @@ public class Comment implements Searchable, Bookmarkable {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "post_id", nullable = true)
     @ToString.Exclude
     private Post post;
