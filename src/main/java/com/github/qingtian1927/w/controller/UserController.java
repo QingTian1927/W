@@ -1,8 +1,9 @@
 package com.github.qingtian1927.w.controller;
 
 import com.github.qingtian1927.w.model.*;
-import com.github.qingtian1927.w.model.dto.EditUserForm;
+import com.github.qingtian1927.w.model.dto.ProfileEditForm;
 import com.github.qingtian1927.w.model.dto.NotificationForm;
+import com.github.qingtian1927.w.model.dto.SettingsEditForm;
 import com.github.qingtian1927.w.model.dto.SignUpForm;
 import com.github.qingtian1927.w.service.interfaces.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -28,14 +30,16 @@ public class UserController {
     private final FollowService followService;
     private final NotificationService notificationService;
     private final PostService postService;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserController(UserService userService, ProfileService profileService, FollowService followService, NotificationService notificationService, PostService postService) {
+    public UserController(UserService userService, ProfileService profileService, FollowService followService, NotificationService notificationService, PostService postService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.profileService = profileService;
         this.followService = followService;
         this.notificationService = notificationService;
         this.postService = postService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     private User getAuthenticatedUser() {
@@ -62,7 +66,7 @@ public class UserController {
 
     @PostMapping("/users/create")
     public String createUser(@ModelAttribute SignUpForm params, Model model) {
-        if (userService.existsByUsername(params.getEmail(), params.getUsername())) {
+        if (userService.exists(params.getEmail(), params.getUsername())) {
             model.addAttribute("error", "User already exists");
             return "signup";
         }
@@ -80,7 +84,7 @@ public class UserController {
     }
 
     @PostMapping("/users/{id}/edit")
-    public String editUser(@ModelAttribute EditUserForm params, Model model) {
+    public String editUser(@ModelAttribute ProfileEditForm params, Model model) {
         User user = getAuthenticatedUser();
         if (user == null) {
             return "redirect:/login";
@@ -340,5 +344,45 @@ public class UserController {
 
         model.addAttribute("error", "Request forbidden");
         return "redirect:/error";
+    }
+
+    @PostMapping("/settings/{id}/edit")
+    public String editSettings(@ModelAttribute SettingsEditForm params, Model model) {
+        User user = getAuthenticatedUser();
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        if (params.containsNullData()) {
+            model.addAttribute("error", "Missing parameters");
+            return "redirect:/settings";
+        }
+
+        String email = params.getEmail();
+        String oldPassword = params.getOldPassword();
+        String newPassword = params.getNewPassword();
+        String repeatPassword = params.getRepeatPassword();
+
+        if (!email.isEmpty() && !userService.existsByEmail(email)) {
+            user.setEmail(email);
+        }
+        if (!oldPassword.isEmpty() && !newPassword.isEmpty() && !repeatPassword.isEmpty()) {
+            if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+                model.addAttribute("error", "Incorrect credentials. Please check your old password");
+                return "settings";
+            }
+            if (oldPassword.equals(newPassword)) {
+                model.addAttribute("error", "New password cannot be the same as old password");
+                return "settings";
+            }
+            if (!newPassword.equals(repeatPassword)) {
+                model.addAttribute("error", "Repeat password does not match new password");
+                return "settings";
+            }
+            user.setPassword(newPassword);
+        }
+
+        userService.save(user);
+        return "redirect:/settings?saved=true";
     }
 }

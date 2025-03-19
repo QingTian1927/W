@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmailAndUsername(String email, String accountHandle);
     boolean existsByUsername(String username);
+    boolean existsByEmail(String email);
     Optional<User> getByEmail(String email);
     Optional<User> findByEmail(String email);
     List<User> findTop10ByOrderByCreatedDateDesc();

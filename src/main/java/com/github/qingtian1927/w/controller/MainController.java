@@ -116,4 +116,9 @@ public class MainController {
         model.addAttribute("captcha", new Captcha());
         return "forgot_password";
     }
+
+    @GetMapping(value = {"/settings"})
+    public String settings(Model model) {
+        return "settings";
+    }
 }

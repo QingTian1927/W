@@ -54,8 +54,8 @@
                 </svg>
                 <span class="hidden md:inline font-medium text-lg">
                     Notifications
-                    <th:block th:with="count = ${@notificationServiceImpl.countUnreadNotification(#authentication.getPrincipal().getUser())}">
-                        <span th:if="${#authentication.principal != 'anonymousUser' && count > 0}" th:text="${'(' + count + ')'}"></span>
+                    <th:block th:if="${#authentication.principal != 'anonymousUser'}" th:with="count = ${@notificationServiceImpl.countUnreadNotification(#authentication.getPrincipal().getUser())}">
+                        <span th:text="${'(' + count + ')'}"></span>
                     </th:block>
                 </span>
             </a>

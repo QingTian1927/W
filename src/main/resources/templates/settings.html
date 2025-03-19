@@ -1,0 +1,101 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>W - search.html</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/search_input.css}">
+    <link rel="stylesheet" th:href="@{/css/colors.css}">
+</head>
+<body class="max-w-svw min-h-svh flex justify-end items-start bg-light-faded text-dark">
+<aside class="fixed z-10 bottom-0 left-0 md:top-0 h-[10%] md:h-full w-full md:w-[30%] xl:w-[20%] p-3 flex flex-col justify-center gap-12">
+    <th:block th:insert="~{fragments/sidebar :: sidebar (page = ${'bookmarks'})}"></th:block>
+</aside>
+<main class="min-h-[90%] md:min-h-full w-full md:w-[70%] xl:w-[80%] p-3 pb-0 md:pb-3 flex flex-col justify-center items-center">
+    <div class="grow min-h-full size-full p-6 rounded-lg shadow-md md:shadow-lg bg-lighter text-dark">
+        <th:block th:insert="~{fragments/viewfeed_header}"></th:block>
+
+        <div th:if="${#authentication.principal != 'anonymousUser'}"
+             th:with="user = ${#authentication.getPrincipal().getUser()}"
+             class="size-full mt-3 md:mt-0 flex flex-wrap justify-start items-center gap-6">
+            <form id="info-form" th:action="@{/settings/{id}/edit(id = ${user.getId()})}" method="POST"
+                  class="w-full p-3 mb-0 grid grid-cols-1 gap-6 rounded-lg shadow-sm border-2 border-light">
+                <h2 class="text-3xl font-bold text-darker">User Information</h2>
+
+                <label for="email" class="w-full flex flex-col gap-1.5">
+                    <span class="font-medium text-lg">Email</span>
+                    <input type="email" id="email" name="email" th:value="${user.getEmail()}" required
+                           autocomplete="email" placeholder="Enter your email address"
+                           class="w-full px-2 py-1 rounded-md bg-darker-light-faded text-lg">
+                </label>
+
+                <div class="flex flex-col justify-start items-center gap-3">
+                    <label for="old-password" class="w-full flex flex-col gap-1.5">
+                        <span class="font-medium text-lg">Old Password</span>
+                        <input type="password" id="old-password" name="oldPassword" placeholder="********"
+                               autocomplete="current-password"
+                               class="w-full px-2 py-1 rounded-md bg-darker-light-faded text-lg">
+                    </label>
+
+                    <label for="new-password" class="w-full flex flex-col gap-1.5">
+                        <span class="font-medium text-lg">New Password</span>
+                        <input type="password" id="new-password" name="newPassword" placeholder="********"
+                               autocomplete="new-password"
+                               class="w-full px-2 py-1 rounded-md bg-darker-light-faded text-lg">
+                    </label>
+
+                    <label for="repeat-password" class="w-full flex flex-col gap-1.5">
+                        <span class="font-medium text-lg">Repeat Password</span>
+                        <input type="password" id="repeat-password" name="repeatPassword" placeholder="********"
+                               autocomplete="new-password"
+                               class="w-full px-2 py-1 rounded-md bg-darker-light-faded text-lg">
+                    </label>
+                </div>
+
+                <div class="w-full flex justify-end items-center">
+                    <button id="info-submit" type="submit"
+                            class="w-[7.5em] p-3 rounded-full text-center font-semibold btn-accent">
+                        Save
+                    </button>
+                </div>
+
+                <script th:inline="javascript">
+                    document.getElementById("info-submit").addEventListener("click", (e) => {
+                        e.preventDefault();
+                        const oldPasswordInput = document.getElementById("old-password");
+                        const newPasswordInput = document.getElementById("new-password");
+                        const repeatPasswordInput = document.getElementById("repeat-password");
+
+                        if (newPasswordInput.value !== repeatPasswordInput.value) {
+                            alert("Repeat Password does not match New Password!");
+                            return;
+                        }
+
+                        if (oldPasswordInput.value === newPasswordInput.value) {
+                            alert("New Password cannot be the same as Old Password!");
+                            return;
+                        }
+
+                        document.getElementById("info-form").submit();
+                    });
+                </script>
+            </form>
+        </div>
+    </div>
+
+    <!--/* mobile layout action menu spacer */-->
+    <div class="block md:hidden h-[10svh] w-full"></div>
+</main>
+
+<script th:if="${error != null}" th:inline="javascript">
+    /*<![CDATA[*/
+        alert([[${error}]]);
+    /*]]>*/
+</script>
+
+<script th:if="${param.saved != null && param.saved.contains('true')}" th:inline="javascript">
+    alert("Successfully updated user information");
+</script>
+</body>
+</html>
