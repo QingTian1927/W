@@ -78,6 +78,19 @@
                 <span class="font-medium text-base md:text-lg" title="Create a new post">Post</span>
             </button>
         </div>
+
+        <script th:with="url = @{/}" th:inline="javascript">
+            /*<![CDATA[*/
+            const postButton = document.getElementById("post-button");
+            postButton.addEventListener("click", (e) => {
+                if (document.getElementById("post-create-form")) {
+                    window.scrollTo({top: 0, behavior: 'smooth'});
+                    return;
+                }
+                window.location.href = window.location.origin + [[${url}]];
+            })
+            /*]]>*/
+        </script>
     </div>
 
     <div class="w-full pl-3 hidden md:flex justify-start items-center gap-3 justify-self-end">

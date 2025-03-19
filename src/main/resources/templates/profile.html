@@ -12,6 +12,7 @@
 <body class="max-w-svw min-h-svh flex justify-end items-start bg-light-faded text-dark">
 <aside class="fixed z-10 bottom-0 left-0 md:top-0 h-[10%] md:h-full w-full md:w-[30%] xl:w-[20%] p-3 flex flex-col justify-center gap-12">
     <th:block th:insert="~{fragments/sidebar :: sidebar (page = ${''})}"></th:block>
+
 </aside>
 <main class="min-h-[90%] md:min-h-full w-full md:w-[70%] xl:w-[80%] p-3 pb-0 md:pb-3 flex flex-col justify-center items-center">
     <div class="relative grow size-full p-6 rounded-lg shadow-md md:shadow-lg bg-lighter text-dark">
@@ -327,7 +328,9 @@
     avatarOverlayCloseBtn.addEventListener("click", () => {
         closeOverlay(avatarOverlay)
     });
-
+</script>
+<script th:if="${#authentication.principal != 'anonymousUser' && #authentication.getPrincipal().getUsername() == user.getEmail()}"
+        th:inline="javascript">
     const editButton = document.getElementById("edit-profile-button");
     const editOverlay = document.getElementById("edit-profile-overlay");
     const editOverlayCloseBtn = document.getElementById("edit-profile-overlay-close-button");
@@ -338,9 +341,7 @@
     editOverlayCloseBtn.addEventListener("click", () => {
         closeOverlay(editOverlay, "flex");
     })
-</script>
-<script th:if="${#authentication.principal != 'anonymousUser' && #authentication.getPrincipal().getUsername() == user.getEmail()}"
-        th:inline="javascript">
+
     const cancelUploadBtn = document.getElementById("cancel-upload-button");
     const confirmUploadBtn = document.getElementById("confirm-upload-button");
     const bannerUploadForm = document.getElementById("banner-upload-form");

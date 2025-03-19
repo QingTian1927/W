@@ -100,7 +100,7 @@
                     </a>
                 </div>
 
-                <form th:action="@{/post/create}" method="POST"
+                <form id="post-create-form" th:action="@{/post/create}" method="POST"
                       class="grow h-full m-0 flex flex-col justify-center items-start gap-3">
                     <input type="hidden" name="redirect" th:value="@{/}"/>
                     <label for="post-content" class="w-full grow">

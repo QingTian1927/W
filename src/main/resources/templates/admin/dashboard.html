@@ -84,7 +84,7 @@
                             <td class="max-w-full p-1.5 overflow-hidden text-ellipsis"
                                 th:text="${post.getCreatedDate().toString()}"></td>
                             <td class="p-1.5">
-                                <button>View More</button>
+                                <a th:href="@{/admin/posts/1}">View More</a>
                             </td>
                         </tr>
                         </tbody>
