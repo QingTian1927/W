@@ -1,7 +1,7 @@
 W
 =
 
-W is a simple X (formerly Twitter) clone using Spring Boot, Thymeleaf, Tailwindcss, and SQL Server.
+W is a simple X (formerly Twitter) clone using Spring Boot, Thymeleaf, Tailwindcss, and SQL Server created for my Java Web Programming class.
 
 ![W guest feed (landscape layout)](images/homepage.png)
 
