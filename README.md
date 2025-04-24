@@ -51,3 +51,6 @@ To update your W profile, simply access your profile page and click on the "Edit
 ![W edit profile (landscape layout)](images/profile_edit.png)
 
 ![W edit banner (landscape layout)](images/profile_changebanner.png)
+
+# Running Locally
+It is possible to host an instance of W locally by cloning this repo and then importing it into IntelliJ IDEA. Make sure to update the `application.properties` file appropriately to match your running environment. 
